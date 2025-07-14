@@ -5,11 +5,6 @@ VisualStudioVersion = 17.14.36221.1 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtanRPG", "RtanRPG\RtanRPG.csproj", "{1A2C7755-D996-4A56-8715-62A207E28016}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{AB8D0DEA-3C19-4B2B-850C-14EC7CF85E0B}"
-	ProjectSection(SolutionItems) = preProject
-		SoundManager.cs = SoundManager.cs
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
