@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RtanRPG.Utils
 {
-    public class player
+    public class player                     //예시용
     {
         public int level { get; set; }
         public string name { get; set; }
