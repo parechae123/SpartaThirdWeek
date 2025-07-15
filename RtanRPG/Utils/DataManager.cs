@@ -7,8 +7,19 @@ using System.Threading.Tasks;
 
 namespace RtanRPG.Utils
 {
+    public class player
+    {
+        public int level { get; set; }
+        public string name { get; set; }
+        public string job { get; set; }
+        public int atk { get; set; }
+    }
     public class DataManager
     {
+        public player PlayerData { get; set; } = new player();
+        public List<player> PlayersData { get; set; } = new List<player>();
+        public List<player> ItemsData { get; set; } = new List<player>();
+        public List<player> ShopItemData { get; set; } = new List<player>();
         public string AllData { get; set; }                     //필요 객체들 생성
         private readonly string filePath;
         private static DataManager instance;
@@ -44,7 +55,10 @@ namespace RtanRPG.Utils
             DataManager loadFile = serializer.Load(filePath);
             if (loadFile != null)
             {
-                this.AllData = loadFile.AllData;
+                this.PlayerData = loadFile.PlayerData;
+                this.PlayersData = loadFile.PlayersData;
+                this.ItemsData = loadFile.ItemsData;
+                this.ShopItemData = loadFile.ShopItemData;
             }
         }
     }
