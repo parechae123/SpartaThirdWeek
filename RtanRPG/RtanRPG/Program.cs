@@ -8,7 +8,7 @@ namespace RtanRPG
     {
         static void Main(string[] args)
         {        
-            
+
         }
     }
 }
