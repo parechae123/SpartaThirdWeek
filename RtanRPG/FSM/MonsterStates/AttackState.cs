@@ -8,10 +8,10 @@ namespace RtanRPG.FSM.States
 {
     class AttackState : StateParent
     {
-        public AttackState(IStateMachine stateMachine,Stat stat) : base(stateMachine,stat)
+        public AttackState(IStateMachine stateMachine, string name) : base(stateMachine, name)
         {
             this.stateMachine = stateMachine;
-            this.stat = stat;
+            this.name = name;
         }
 
         public override void Enter()
@@ -33,30 +33,27 @@ namespace RtanRPG.FSM.States
     class PhaseOneAttackState : AttackState
     {
 
-        public PhaseOneAttackState(IStateMachine stateMachine, Stat stat) : base(stateMachine, stat)
+        public PhaseOneAttackState(IStateMachine stateMachine, string name) : base(stateMachine, name)
         {
             this.stateMachine = stateMachine;
-            this.stat = stat;
-            currTick = 0;
+            this.name = name;
         }
     }
     class PhaseTwoAttackState : AttackState
     {
 
-        public PhaseTwoAttackState(IStateMachine stateMachine, Stat stat) : base(stateMachine, stat)
+        public PhaseTwoAttackState(IStateMachine stateMachine, string name) : base(stateMachine, name)
         {
             this.stateMachine = stateMachine;
-            this.stat = stat;
-            currTick = 0;
+            this.name = name;
         }
     }
     class PhaseThreeAttackState : AttackState
     {
-        public PhaseThreeAttackState(IStateMachine stateMachine, Stat stat) : base(stateMachine, stat)
+        public PhaseThreeAttackState(IStateMachine stateMachine, string name) : base(stateMachine, name)
         {
             this.stateMachine = stateMachine;
-            this.stat = stat;
-            currTick = 0;
+            this.name = name;
         }
     }
 }

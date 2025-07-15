@@ -8,24 +8,21 @@ namespace RtanRPG.FSM.States
 {
     class DieState : StateParent
     {
-        public DieState(IStateMachine stateMachine, int goal,Stat stat) : base(stateMachine,stat)
+        public DieState(IStateMachine stateMachine, string name) : base(stateMachine, name)
         {
             this.stateMachine = stateMachine;
-            this.msGoal = goal;
-            this.stat = stat;
-            currTick = 0;
+            this.name = name;
         }
 
         public override void Enter()
         {
-            startTick = Environment.TickCount;
+            
 
         }
 
         public override void Execute()
         {
-            currTick = Environment.TickCount - startTick;
-            if (currTick >= msGoal) Exit();
+            
         }
 
         public override void Exit()

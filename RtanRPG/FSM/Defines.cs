@@ -21,30 +21,23 @@ namespace RtanRPG.FSM
     public class StateParent : IState
     {
         protected IStateMachine stateMachine;
-
-        protected int sGoal;
-        protected int msGoal;
-
-        protected int currTick;
-        protected int startTick;
-        protected Stat stat;
-        public bool IsChangeAble { get { return sGoal <= currTick; } }
-        public StateParent(IStateMachine stateMachine, Stat stat)
+        protected string name;//파일명,애니메이션을 불러오기 위한 변수
+        public StateParent(IStateMachine stateMachine, string name)
         {
             this.stateMachine = stateMachine;
-            this.stat = stat;
+            this.name = name;
         }
+
+        public bool IsChangeAble => throw new NotImplementedException();
 
         public virtual void Enter()
         {
-            startTick = Environment.TickCount;
 
         }
 
         public virtual void Execute()
         {
-            currTick = Environment.TickCount - startTick;
-            if (currTick >= msGoal) Exit();
+
         }
 
         public virtual void Exit()
@@ -55,13 +48,14 @@ namespace RtanRPG.FSM
     public enum StateType { Attack,Idle,Die}
     public class Stat
     {
-        private int maxHP;
-        private int currHP;
+        private float maxHP;
+        private float currHP;
+        public float GetHPPercent { get { return currHP / maxHP; } }
         public bool IsDie { get { return currHP <= 0; } }
         public int AttackDamage { get; private set; }
         public string Name { get; private set; }
 
-        public Stat(int maxHP, int currHP, int attackDamage, string name)
+        public Stat(float maxHP, float currHP, int attackDamage, string name)
         {
             this.maxHP = maxHP;
             this.currHP = currHP;
@@ -69,7 +63,7 @@ namespace RtanRPG.FSM
             this.Name = name;
         }
 
-        public void TakeDamage(int v)
+        public void TakeDamage(float v)
         {
             currHP -= v;
             if (IsDie)
@@ -77,7 +71,7 @@ namespace RtanRPG.FSM
                 //YOON : FSM 사망으로 강제전이
             }
         }
-        public void Heal(int v)
+        public void Heal(float v)
         {
             if(maxHP < currHP + v)
             {
