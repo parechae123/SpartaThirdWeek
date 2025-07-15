@@ -20,8 +20,6 @@ namespace RtanRPG.FSM
     }
     public class StateParent : IState
     {
-
-
         protected IStateMachine stateMachine;
 
         protected int sGoal;
@@ -57,12 +55,20 @@ namespace RtanRPG.FSM
     public enum StateType { Attack,Idle,Die}
     public class Stat
     {
-
-
         private int maxHP;
         private int currHP;
         public bool IsDie { get { return currHP <= 0; } }
-        
+        public int AttackDamage { get; private set; }
+        public string Name { get; private set; }
+
+        public Stat(int maxHP, int currHP, int attackDamage, string name)
+        {
+            this.maxHP = maxHP;
+            this.currHP = currHP;
+            AttackDamage = attackDamage;
+            this.Name = name;
+        }
+
         public void TakeDamage(int v)
         {
             currHP -= v;
@@ -83,6 +89,7 @@ namespace RtanRPG.FSM
             }
             
         }
+
 
     }
 }
