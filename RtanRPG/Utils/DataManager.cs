@@ -9,27 +9,27 @@ namespace RtanRPG.Utils
 {
     public class SceneData
     {
-        public int[] Indexex { get; set; } = new int[0];
+        public int[] Indexes { get; set; } = new int[0];
         public string[] Menus { get; set; }
         public string BackgroundMusic { get; set; }
     }
 
-    public class SpawnData : SceneData
-    {
-        public int index { get; set; } 
-        public int Left { get; set; }
-        public int Right { get; set; }
-    }
-
-    public class StageSceneData : SpawnData
+    public class StageSceneData : SceneData
     {
         public int[][] map { get; set; }
         public SpawnData[] Positions { get; set; }
     }
 
+    public class SpawnData : StageSceneData
+    {
+        public int index { get; set; }
+        public int Left { get; set; }
+        public int Right { get; set; }
+    }
+
     public class CharacterData
     {
-        public string name { get; set; }
+        public string Name { get; set; }
         public int Level { get; set; }
         public string Class { get; set; }
         public int HealthPoint { get; set; }
