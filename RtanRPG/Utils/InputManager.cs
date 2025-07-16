@@ -11,10 +11,13 @@ namespace RtanRPG.Utils
         Thread _thread;
         bool _running = false;
 
-        public event Action<int, int> onmove;
+        //public event Action<int, int> onmove;  이동 입력 이벤트
+        public Action<ConsoleKey> InputCallback;  //모든키 입력처리 콜벡
 
         public void Start()
         {
+            if(_running) return;
+
             _running = true;
             _thread = new Thread(GetConsoleKey);
             _thread.Start();
@@ -30,38 +33,17 @@ namespace RtanRPG.Utils
         {
             while (_running)
             {
-                if (Console.KeyAvailable)
+                if (System.Console.KeyAvailable)
                 {
-                    var key = Console.ReadKey(true).Key;
-                    int dx = 0, dy = 0;
-                    switch (key)
-                    {
-                        case ConsoleKey.W:
-                        case ConsoleKey.UpArrow:
-                            dy = -1; break;
-                        case ConsoleKey.S:
-                        case ConsoleKey.DownArrow:
-                            dy = 1; break;
-                        case ConsoleKey.A:
-                        case ConsoleKey.LeftArrow:
-                            dx = -1; break;
-                        case ConsoleKey.D:
-                        case ConsoleKey.RightArrow:
-                            dx = 1; break;
-                        case ConsoleKey.Z:
-                                break;
-                        case ConsoleKey.X:
-                                break;
-                        case ConsoleKey.Escape:
+                    var key = System.Console.ReadKey(true).Key;
+
+                    var callback = InputCallback;  //복사해서 호출
+                    InputCallback?.Invoke(key);
+
+                    if (key == ConsoleKey.Escape)
                         Stop();
-                        break;
-                    }
-                    if(dx !=0 || dy != 0)
-                    {
-                        onmove?.Invoke(dx, dy);
-                    }
                 }
-                Thread.Sleep(50);
+                Thread.Sleep(30);
             }
         }
     }

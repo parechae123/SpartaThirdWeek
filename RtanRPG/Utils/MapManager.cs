@@ -25,19 +25,19 @@ namespace RtanRPG.Utils
 
         public void Draw(int playerX, int playerY)
         {
-            Console.Clear();
+            System.Console.Clear();
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
                     if (x == playerX && y == playerY)
-                        Console.Write("P ");
+                        System.Console.Write("P ");
                     else
-                        Console.Write($"{map[y, x]} ");
+                        System.Console.Write($"{map[y, x]} ");
                 }
-                Console.WriteLine();
+                System.Console.WriteLine();
             }
-            Console.WriteLine("\nWASD 또는 방향키로 이동");
+            System.Console.WriteLine("\nWASD 또는 방향키로 이동");
         }
 
         public bool IsInsideMap(int x, int y)
