@@ -11,9 +11,11 @@ namespace RtanRPG.FSM.Monsters
     {
         protected Stat stat;
         protected IStateMachine stateMachine;
+
         protected bool[,] patterns = new bool[200,3];
         protected char[] keys = new char[3];
         protected List<Queue<bool>> visualizedNote = new List<Queue<bool>>();
+
         protected int currIndex = 0;//판정의 기준이 되는 인덱스
         
         protected int createDelay;//노드 판정 이전 createDelay 만큼 빠르게 노드가 생성(판정 이전 보여주기 위함)

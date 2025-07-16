@@ -8,15 +8,19 @@ namespace RtanRPG.FSM.States
 {
     class DieState : StateParent
     {
-        public DieState(IStateMachine stateMachine, string name) : base(stateMachine, name)
+        public DieState(IStateMachine stateMachine) : base(stateMachine)
         {
             this.stateMachine = stateMachine;
-            this.name = name;
+            
         }
 
         public override void Enter()
         {
-            
+            StringBuilder sb = new StringBuilder();
+            sb.Append(stateMachine.GetName);
+            sb.Append("_Die_");
+            sb.Append(stateMachine.GetPhase);
+            /*sb.ToString();//키값으로 불러 올 string*/
 
         }
 

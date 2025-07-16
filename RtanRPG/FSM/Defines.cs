@@ -9,6 +9,8 @@ namespace RtanRPG.FSM
     public interface IStateMachine
     {
         public void StateChange(StateType state);
+        string GetName { get; }
+        int GetPhase { get; }
 
     }
     interface IState
@@ -20,12 +22,11 @@ namespace RtanRPG.FSM
     }
     public class StateParent : IState
     {
-        protected IStateMachine stateMachine;
-        protected string name;//파일명,애니메이션을 불러오기 위한 변수
-        public StateParent(IStateMachine stateMachine, string name)
+        protected IStateMachine stateMachine;//파일명,애니메이션을 불러오기 위한 변수
+
+        public StateParent(IStateMachine stateMachine)
         {
             this.stateMachine = stateMachine;
-            this.name = name;
         }
 
         public bool IsChangeAble => throw new NotImplementedException();

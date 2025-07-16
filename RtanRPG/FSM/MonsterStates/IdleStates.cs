@@ -9,14 +9,18 @@ namespace RtanRPG.FSM.States
 {
     class IdleState : StateParent
     {
-        public IdleState(IStateMachine stateMachine,string name) : base(stateMachine, name)
+        public IdleState(IStateMachine stateMachine) : base(stateMachine)
         {
             this.stateMachine = stateMachine;
         }
 
         public override void Enter()
         {
-
+            StringBuilder sb = new StringBuilder();
+            sb.Append(stateMachine.GetName);
+            sb.Append("_Idle_");
+            sb.Append(stateMachine.GetPhase);
+            /*sb.ToString();//키값으로 불러 올 string*/
         }
 
         public override void Execute()
@@ -30,34 +34,5 @@ namespace RtanRPG.FSM.States
         }
     }
 
-    class PhaseOneIdleState : IdleState
-    {
-        public PhaseOneIdleState(IStateMachine stateMachine, string name) : base(stateMachine,name)
-        {
-            this.stateMachine = stateMachine;
-            this.name = name;
-        }
-        public override void Enter()
-        {
-            base.Enter();
-        }
-    }
-    class PhaseTwoIdleState : IdleState
-    {
-        public PhaseTwoIdleState(IStateMachine stateMachine,string name) : base(stateMachine,name)
-        {
-            this.stateMachine = stateMachine;
-            this.name = name;
-        }
 
-
-    }
-    class PhaseThreeIdleState : IdleState
-    {
-        public PhaseThreeIdleState(IStateMachine stateMachine, string name) : base(stateMachine, name)
-        {
-            this.stateMachine = stateMachine;
-            this.name = name;
-        }
-    }
 }

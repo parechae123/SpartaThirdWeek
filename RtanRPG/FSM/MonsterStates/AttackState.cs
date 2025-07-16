@@ -8,16 +8,18 @@ namespace RtanRPG.FSM.States
 {
     class AttackState : StateParent
     {
-        public AttackState(IStateMachine stateMachine, string name) : base(stateMachine, name)
+        public AttackState(IStateMachine stateMachine) : base(stateMachine)
         {
             this.stateMachine = stateMachine;
-            this.name = name;
         }
 
         public override void Enter()
         {
-            base.Enter();
-
+            StringBuilder sb = new StringBuilder();
+            sb.Append(stateMachine.GetName);
+            sb.Append("_AttackState_");
+            sb.Append(stateMachine.GetPhase);
+            /*sb.ToString();//키값으로 불러 올 string*/
         }
 
         public override void Execute()
@@ -28,32 +30,6 @@ namespace RtanRPG.FSM.States
         public override void Exit()
         {
             base.Exit();
-        }
-    }
-    class PhaseOneAttackState : AttackState
-    {
-
-        public PhaseOneAttackState(IStateMachine stateMachine, string name) : base(stateMachine, name)
-        {
-            this.stateMachine = stateMachine;
-            this.name = name;
-        }
-    }
-    class PhaseTwoAttackState : AttackState
-    {
-
-        public PhaseTwoAttackState(IStateMachine stateMachine, string name) : base(stateMachine, name)
-        {
-            this.stateMachine = stateMachine;
-            this.name = name;
-        }
-    }
-    class PhaseThreeAttackState : AttackState
-    {
-        public PhaseThreeAttackState(IStateMachine stateMachine, string name) : base(stateMachine, name)
-        {
-            this.stateMachine = stateMachine;
-            this.name = name;
         }
     }
 }
