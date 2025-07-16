@@ -8,12 +8,14 @@ namespace RtanRPG.FSM
 {
     public interface IStateMachine
     {
+        
         public void StateChange(StateType state);
+        public IState GetCurrentState();
         string GetName { get; }
         int GetPhase { get; }
 
     }
-    interface IState
+    public interface IState
     {
         void Enter();
         void Execute();
@@ -49,19 +51,22 @@ namespace RtanRPG.FSM
     public enum StateType { Attack,Idle,Die}
     public class Stat
     {
+        public IStateMachine stateMachine;
+
         private float maxHP;
         private float currHP;
-        public float GetHPPercent { get { return currHP / maxHP; } }
+        public float GetHPPercent { get { return currHP <=0 || maxHP <= 0 ? 0:currHP / maxHP; } }
         public bool IsDie { get { return currHP <= 0; } }
         public int AttackDamage { get; private set; }
         public string Name { get; private set; }
 
-        public Stat(float maxHP, float currHP, int attackDamage, string name)
+        public Stat(float maxHP, float currHP, int attackDamage, string name, IStateMachine stateMachine)
         {
             this.maxHP = maxHP;
             this.currHP = currHP;
             AttackDamage = attackDamage;
             this.Name = name;
+            this.stateMachine = stateMachine;
         }
 
         public void TakeDamage(float v)
@@ -70,6 +75,7 @@ namespace RtanRPG.FSM
             if (IsDie)
             {
                 //YOON : FSM 사망으로 강제전이
+                
             }
         }
         public void Heal(float v)

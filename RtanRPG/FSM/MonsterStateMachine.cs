@@ -39,11 +39,22 @@ namespace RtanRPG.FSM
 
         public void StateChange(StateType state)
         {
+            if (state != StateType.Die && stat.GetHPPercent <= 0) { StateChange(StateType.Die); return; }
+            if (states[state] == currState || currState == states[StateType.Die]) return;
             currState.Exit();
+
             float currHP = stat.GetHPPercent;
+
             phase = currHP > 0.7f ? 0 : currHP > 0.3f ? 1 : 2;//0.7이상일시 0페, 이하 1페, 0.3보다 작으면 2페
+
             currState = states[state];
+
             currState.Enter();
+        }
+
+        public IState GetCurrentState()
+        {
+            return currState;
         }
     }
 
