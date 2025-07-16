@@ -24,7 +24,7 @@ namespace RtanRPG.Utils
         {
             if (!File.Exists(path))
             {
-                Console.WriteLine($"파일 없음: {path}");
+                System.Console.WriteLine($"파일 없음: {path}");
                 return;
             }
 
@@ -44,7 +44,7 @@ namespace RtanRPG.Utils
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[오디오 재생 오류 - OneShot] {ex.Message}");
+                System.Console.WriteLine($"[오디오 재생 오류 - OneShot] {ex.Message}");
             }
         }
 
@@ -55,7 +55,7 @@ namespace RtanRPG.Utils
 
             if (!File.Exists(path))
             {
-                Console.WriteLine($"파일 없음: {path}");
+                System.Console.WriteLine($"파일 없음: {path}");
                 return;
             }
 
@@ -70,7 +70,7 @@ namespace RtanRPG.Utils
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[오디오 재생 오류 - Loop] {ex.Message}");
+                System.Console.WriteLine($"[오디오 재생 오류 - Loop] {ex.Message}");
             }
         }
 
