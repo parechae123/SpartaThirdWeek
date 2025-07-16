@@ -18,11 +18,8 @@ namespace RtanRPG.Utils
 
         private AudioManager() { }
 
-        //H: dasdasd
 
-        /// <summary>
-        /// 단발 재생 (MP3/WAV 모두 지원)
-        /// </summary>
+        ///단발 재생 (MP3/WAV 모두 지원)
         public void PlayOneShot(string path)
         {
             if (!File.Exists(path))
@@ -38,7 +35,7 @@ namespace RtanRPG.Utils
                 waveOut.Init(reader);
                 waveOut.Play();
 
-                // 자동 해제 (재생 완료 후)
+                //자동 해제 (재생 완료 후)
                 waveOut.PlaybackStopped += (s, e) =>
                 {
                     waveOut.Dispose();
@@ -51,9 +48,7 @@ namespace RtanRPG.Utils
             }
         }
 
-        /// <summary>
-        /// 루프 재생
-        /// </summary>
+        ///루프 재생
         public void Play(string path)
         {
             Stop(); // 먼저 정지
@@ -79,9 +74,7 @@ namespace RtanRPG.Utils
             }
         }
 
-        /// <summary>
-        /// 재생 정지
-        /// </summary>
+        ///재생 정지
         public void Stop()
         {
             _outputDevice?.Stop();
@@ -92,9 +85,7 @@ namespace RtanRPG.Utils
         }
     }
 
-    /// <summary>
-    /// NAudio에서 루프 재생을 지원하게 만드는 보조 클래스
-    /// </summary>
+    ///NAudio에서 루프 재생을 지원하게 만드는 보조 클래스
     internal class LoopStream : WaveStream
     {
         private readonly WaveStream _sourceStream;
@@ -105,7 +96,7 @@ namespace RtanRPG.Utils
         }
 
         public override WaveFormat WaveFormat => _sourceStream.WaveFormat;
-        public override long Length => long.MaxValue; // 무한 루프처럼 보이게
+        public override long Length => long.MaxValue; //무한 루프처럼 보이게
 
         public override long Position
         {
