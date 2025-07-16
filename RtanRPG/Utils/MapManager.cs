@@ -20,7 +20,7 @@ namespace RtanRPG.Utils
 
             for (int y = 0; y < height; y++)
                 for (int x = 0; x < width; x++)
-                    map[y, x] = '.'; // 기본은 빈 땅
+                    map[y, x] = '.';
         }
 
         public void Draw(int playerX, int playerY)
@@ -37,7 +37,7 @@ namespace RtanRPG.Utils
                 }
                 Console.WriteLine();
             }
-            Console.WriteLine("\nWASD 또는 방향키로 이동, ESC로 종료");
+            Console.WriteLine("\nWASD 또는 방향키로 이동");
         }
 
         public bool IsInsideMap(int x, int y)
