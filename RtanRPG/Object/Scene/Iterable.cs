@@ -2,13 +2,13 @@ namespace RtanRPG.Object.Scene
 {
     public interface Iterable
     {
-        /// <param name="index"></param>
-        /// <returns></returns>
+        /// <param name="index">The index of the iterator.</param>
+        /// <returns>The iterator corresponding to the index.</returns>
         Iterable GetNextIterator(int index);
 
         /// <summary>
-        /// A list of iterators stored as one-to-one correspondences to keys.
+        /// List of iterators.
         /// </summary>
-        Iterable[] Iterators { get; }
+        public Iterable[] Iterators { get; }
     }
 }

@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Test.Utils.Console
+namespace RtanRPG.Utils.Console
 {
     public static class Win32
     {
@@ -87,8 +87,6 @@ namespace Test.Utils.Console
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
 
         #endregion
-
-        public static Stream ConsoleStream = System.Console.OpenStandardOutput();
         public static IntPtr ConsoleHandle = IntPtr.Zero;
 
         public static readonly IntPtr ConsoleOutputHandle = GetStdHandle(StandardOutputHandle);
@@ -134,18 +132,6 @@ namespace Test.Utils.Console
         }
 
         public static void SetPosition(int i) => SetConsoleCursorPosition(ConsoleHandle, i);
-
-        public static void WriteConsole(string str) => WriteConsole(Encoding.UTF8.GetBytes(str));
-
-        public static void WriteConsole(ref string str) => WriteConsole(Encoding.UTF8.GetBytes(str));
-
-        public static void WriteConsole(byte[] buffer) => ConsoleStream.Write(buffer, 0, buffer.Length);
-
-        public static void WriteConsole(byte b) => ConsoleStream.WriteByte(b);
-
-        public static void SetSize(int x, int y) => WriteConsole("\u001b[8;" + y + ";" + x + "t");
-
-        public static void ResetColor() => WriteConsole("\u001b[0m");
 
         //private static string Pastel(string text, int r, int g, int b) => "\u001b[38;2;" + r + ";" + g + ";" + b + "m" + text;
         public static string Pastel(char c, int r, int g, int b) => "\u001b[38;2;" + r + ";" + g + ";" + b + "m" + c;

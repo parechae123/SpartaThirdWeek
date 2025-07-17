@@ -1,4 +1,4 @@
-namespace Test.Utils.Console
+namespace RtanRPG.Utils.Console
 {
     public struct Border
     {

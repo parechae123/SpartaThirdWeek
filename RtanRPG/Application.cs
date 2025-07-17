@@ -1,24 +1,29 @@
-using RtanRPG.Object.Scene;
+using System.Text;
+using RtanRPG.Utils;
+using RtanRPG.Utils.Console;
 
 namespace RtanRPG
 {
     public class Application
     {
-        private SceneManager _sceneManager;
+        private readonly InputSystem _inputSystem;
 
-        private int _index;
-        
         public Application()
         {
-            _sceneManager = new SceneManager();
+            _inputSystem = new InputSystem();
         }
 
         public void Play()
         {
-            while (true)
-            {
-                _sceneManager.Load(_index);
-            }
+            Configuration.MaximizeConsoleScreenSize();
+            Configuration.AdjustBufferSizeToWindow();
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.Clear();
+            
+            _inputSystem.Start();
+            _inputSystem.InputCallback = SceneManager.Instance.Execute;
+            
+            SceneManager.Instance.Load(0);
         }
     }
 }
