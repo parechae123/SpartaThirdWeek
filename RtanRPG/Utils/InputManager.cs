@@ -26,7 +26,6 @@ namespace RtanRPG.Utils
         public void Stop()
         {
             _running = false;
-            _thread?.Join();
         }
 
         private void GetConsoleKey()
