@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RtanRPG.Object
 {
-    public class Vector2D : ICloneable, IEquatable<Vector2D>
+    public struct Vector2D : ICloneable, IEquatable<Vector2D>
     {
         public int Left { get; }
         public int Top { get; }
@@ -29,12 +29,8 @@ namespace RtanRPG.Object
             return new Vector2D(this);
         }
 
-        public override bool Equals(object? obj)
-        {
-            return obj is Vector2D vec && Equals(vec);
-        }
 
-        public bool Equals(Vector2D? other)
+        public bool Equals(Vector2D other)
         {
             if (other == null) return false;
             return Left == other.Left && Top == other.Top;
@@ -58,7 +54,6 @@ namespace RtanRPG.Object
         public static bool operator ==(Vector2D a, Vector2D b)
         {
             if (ReferenceEquals(a, b)) return true;
-            if (a is null || b is null) return false;
             return a.Equals(b);
         }
 
