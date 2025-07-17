@@ -22,24 +22,4 @@ namespace RtanRPG.Utils
             return data;
         }
     }
-
-    //public static class JsonSerializer<T>
-    //{
-    //    private static readonly string Path = System.IO.Path.GetDirectoryName(
-    //    System.Reflection.Assembly.GetExecutingAssembly().Location) ?? string.Empty;
-
-    //    public static void Serialize(T data)
-    //    {
-    //        string json = JsonSerializer.Serialize(data);
-    //    }
-
-    //    public static T Deserialize(string json)
-    //    {
-
-    //        return JsonSerializer.Deserialize<T>(json);
-
-    //    }
-    //}
-
-
 }
