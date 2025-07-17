@@ -19,7 +19,6 @@ namespace RtanRPG.Object
 
         public Vector2D(Vector2D other)
         {
-            if (other == null) throw new ArgumentNullException(nameof(other));
             Left = other.Left;
             Top = other.Top;
         }
@@ -32,7 +31,6 @@ namespace RtanRPG.Object
 
         public bool Equals(Vector2D other)
         {
-            if (other == null) return false;
             return Left == other.Left && Top == other.Top;
         }
 
@@ -53,13 +51,12 @@ namespace RtanRPG.Object
 
         public static bool operator ==(Vector2D a, Vector2D b)
         {
-            if (ReferenceEquals(a, b)) return true;
             return a.Equals(b);
         }
 
         public static bool operator !=(Vector2D a, Vector2D b)
         {
-            return !(a == b);
+            return !a.Equals(b);
         }
     }
 }
