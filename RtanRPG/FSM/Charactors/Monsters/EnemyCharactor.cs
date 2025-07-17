@@ -31,6 +31,7 @@ namespace RtanRPG.FSM.Charactors.Monsters
         public void SendAttackOrder()
         {
             SetAttackState();
+            
             //keys[Random.Shared.Next(0, keys.Length)];//추후 BattleScene의 키값
             //SetIdleState()끝나는 이벤트 전송이 가능하면 이걸 보낸다
         }
