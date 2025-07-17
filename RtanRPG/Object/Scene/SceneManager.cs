@@ -32,7 +32,7 @@ namespace RtanRPG.Object.Scene
                 return;
             }
             
-            _currentScene.Clear();
+            _currentScene.Reset();
 
             if (_currentScene.Iterators[index] is BaseScene nextScene)
             {

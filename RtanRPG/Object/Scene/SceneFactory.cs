@@ -1,3 +1,5 @@
+using RtanRPG.Object.Scene;
+
 namespace RtanRPG.Object.Scene
 {
     public static class SceneFactory
@@ -6,7 +8,7 @@ namespace RtanRPG.Object.Scene
         {
             switch (index)
             {
-                case 0: return new MainScene();
+                case 0: return new MainScene(index);
                 case 1: return new StatusScene();
                 case 2: return new CutScene();
                 case 3: return new Stage01Scene();

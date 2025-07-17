@@ -4,6 +4,6 @@ namespace RtanRPG.Object
     {
         void Render();
 
-        void Clear();
+        void Reset();
     }
 }

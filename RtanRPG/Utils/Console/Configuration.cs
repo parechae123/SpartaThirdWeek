@@ -1,198 +1,89 @@
-﻿using System.Runtime.InteropServices;
-using System.Text;
+using System.Runtime.InteropServices;
 
-namespace RtanRPG.Utils.Console;
-
-public static class Configuration
+namespace RtanRPG.Utils.Console
 {
-    private const int FixedWidthTrueType = 54;
-    private const int StandardOutputHandle = -11;
-
-    #region DLL IMPORTED API
-
-    private const string Kernel32DllName = "kernel32.dll";
-    private const string User32DllName = "user32.dll";
-    
-    [DllImport(Kernel32DllName, SetLastError = true)]
-    public static extern IntPtr GetStdHandle(int nStdHandle);
-
-    [return: MarshalAs(UnmanagedType.Bool)]
-    [DllImport(Kernel32DllName, SetLastError = true, CharSet = CharSet.Unicode)]
-    public static extern bool SetCurrentConsoleFontEx(IntPtr hConsoleOutput, bool bMaximumWindow,
-                                                      ref FontInfo ipConsoleCurrentFont);
-
-    [return: MarshalAs(UnmanagedType.Bool)]
-    [DllImport(Kernel32DllName, SetLastError = true, CharSet = CharSet.Unicode)]
-    public static extern bool GetCurrentConsoleFontEx(IntPtr hConsoleOutput, bool bMaximumWindow,
-                                                      ref FontInfo ipConsoleCurrentFont);
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    public static extern bool GetConsoleScreenBufferInfoEx(IntPtr hConsoleOutput, ref CONSOLE_SCREEN_BUFFER_INFOEX ConsoleScreenBufferInfoEx);
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    public static extern bool SetConsoleScreenBufferInfoEx(IntPtr hConsoleOutput, ref CONSOLE_SCREEN_BUFFER_INFOEX ConsoleScreenBufferInfoEx);
-
-    [DllImport("user32.dll", SetLastError = true)]
-    public static extern bool ShowScrollBar(IntPtr hWnd, int wBar, bool bShow);
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    public static extern bool SetCurrentConsoleFontEx(IntPtr consoleOutput, bool maximumWindow, ref CONSOLE_FONT_INFOEX consoleCurrentFontEx);
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    public static extern bool GetConsoleScreenBufferInfo(IntPtr hConsoleOutput, out CONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo);
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    public static extern bool SetConsoleScreenBufferSize(IntPtr hConsoleOutput, COORD dwSize);
-
-    [DllImport("kernel32.dll")]
-    public static extern bool SetConsoleTextAttribute(IntPtr hConsoleOutput, int wAttributes);
-
-    [DllImport("kernel32.dll")]
-    public static extern bool SetConsoleCursorPosition(IntPtr hConsoleOutput, int coord);
-
-    [DllImport("kernel32.dll")]
-    public static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
-
-    [DllImport("kernel32.dll")]
-    public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
-
-    [DllImport("user32.dll")]
-    public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-    [DllImport("user32.dll")]
-    public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
-    [DllImport("user32.dll")]
-    public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
-
-    [DllImport("user32.dll")]
-    public static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
-
-    [DllImport("kernel32.dll", ExactSpelling = true)]
-    public static extern IntPtr GetConsoleWindow();
-
-    [DllImport("user32.dll", SetLastError = true)]
-    public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
-    
-    #endregion
-
-    public static Stream ConsoleStream = System.Console.OpenStandardOutput();
-    public static IntPtr ConsoleHandle = IntPtr.Zero;
-    
-    public static readonly IntPtr ConsoleOutputHandle = GetStdHandle(StandardOutputHandle);
-
-    public static FontInfo[] SetCurrentFont(string font, short fontSize = 0)
+    public static class Configuration
     {
-        System.Console.WriteLine("Set Current Font: " + font);
-
-        var before = new FontInfo { cbSize = Marshal.SizeOf<FontInfo>() };
-
-        int error;
-        if (GetCurrentConsoleFontEx(ConsoleOutputHandle, false, ref before))
+        public static void MaximizeConsoleScreenSize()
         {
-            var info = new FontInfo
-                           {
-                               cbSize = Marshal.SizeOf<FontInfo>(),
-                               FontIndex = 0,
-                               FontFamily = FixedWidthTrueType,
-                               FontName = font,
-                               FontWeight = 400,
-                               FontSize = fontSize > 0 ? fontSize : before.FontSize
-                           };
+            IntPtr handle = Win32.GetConsoleWindow();
+            Win32.SetForegroundWindow(handle);
 
-            // Get some settings from current font.
-            if (SetCurrentConsoleFontEx(ConsoleOutputHandle, false, ref info) == false)
-            {
-                error = Marshal.GetLastWin32Error();
-                System.Console.WriteLine("Set Error " + error);
-                
-                throw new System.ComponentModel.Win32Exception(error);
-            }
+            Log("Set console screen to foreground", Status.Done);
 
-            var after = new FontInfo { cbSize = Marshal.SizeOf<FontInfo>() };
-            GetCurrentConsoleFontEx(ConsoleOutputHandle, false, ref after);
+            handle = Win32.GetForegroundWindow();
+            Win32.ShowWindow(handle, Win32.SW_MAXIMIZE);
 
-            return new[] { before, info, after };
+            Log("Set console screen size to maximum", Status.Done);
+
+            Thread.Sleep(500);
         }
-        
-        error = Marshal.GetLastWin32Error();
-        System.Console.WriteLine("Get Error " + error);
-        
-        throw new System.ComponentModel.Win32Exception(error);
+
+        public static void AdjustBufferSizeToWindow()
+        {
+            IntPtr hConsole = Win32.GetStdHandle(Win32.StandardOutputHandle);
+            if (Win32.GetConsoleScreenBufferInfo(hConsole, out Win32.CONSOLE_SCREEN_BUFFER_INFO info))
+            {
+                var width = (short)(info.srWindow.Right - info.srWindow.Left + 1);
+                var height = (short)(info.srWindow.Bottom - info.srWindow.Top + 1);
+
+                var size = new Win32.COORD { X = width, Y = height };
+
+                var result = Win32.SetConsoleScreenBufferSize(hConsole, size);
+                if (result == false)
+                {
+                    Log($"Fail to set buffer size : {Marshal.GetLastWin32Error()}", Status.Fail);
+
+                    throw new Exception();
+                }
+
+                Window.DefaultWidth = width;
+                Window.DefaultHeight = height - 1;
+                Window.Buffer = new char[height][];
+                for (var i = 0; i < height; i++)
+                {
+                    Window.Buffer[i] = new char[width];
+                    Array.Fill(Window.Buffer[i], ' ');
+                }
+
+                Log($"Set console screen buffer size to maximum", Status.Done);
+                Log($"Current console screen buffer size is {width}X{height}", Status.Done);
+            }
+            else
+            {
+                Log($"Failed to get console information : {Marshal.GetLastWin32Error()}", Status.Fail);
+
+                throw new Exception();
+            }
+        }
+
+        private static void Log(string message, Status status)
+        {
+            System.Console.Write("[");
+
+            switch (status)
+            {
+                case Status.Fail:
+                    System.Console.ForegroundColor = ConsoleColor.Red;
+                    System.Console.Write("FAIL");
+                    break;
+                case Status.Done:
+                    System.Console.ForegroundColor = ConsoleColor.Green;
+                    System.Console.Write("DONE");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(Status));
+            }
+            
+            System.Console.ResetColor();
+            System.Console.WriteLine($"] {message}");
+
+            Thread.Sleep(100);
+        }
+
+        private enum Status
+        {
+            Fail, Done
+        }
     }
-    
-    public static void SetPosition(int i) => SetConsoleCursorPosition(ConsoleHandle, i);
-    
-    public static void WriteConsole(string str) => WriteConsole(Encoding.UTF8.GetBytes(str));
-
-    public static void WriteConsole(ref string str) => WriteConsole(Encoding.UTF8.GetBytes(str));
-
-    public static void WriteConsole(byte[] buffer) => ConsoleStream.Write(buffer, 0, buffer.Length);
-
-    public static void WriteConsole(byte b) => ConsoleStream.WriteByte(b);
-
-    public static void SetSize(int x, int y) => WriteConsole("\u001b[8;" + y + ";" + x + "t");
-
-    public static void ResetColor() => WriteConsole("\u001b[0m");
-
-    //private static string Pastel(string text, int r, int g, int b) => "\u001b[38;2;" + r + ";" + g + ";" + b + "m" + text;
-    public static string Pastel(char c, int r, int g, int b) => "\u001b[38;2;" + r + ";" + g + ";" + b + "m" + c;
-
-    public static string SetPosition(int row, int collum) => "\u001b[" + row + ";" + collum + "H";
-
-    public static bool ParseBool(string text, bool defaultValue = false)
-    {
-        string trimed = text.Trim();
-
-        if (char.ToLower(trimed[0]) == 't' || trimed == "1") return true;
-        else if (char.ToLower(trimed[0]) == 'f' || trimed == "0") return false;
-
-        return bool.TryParse(text, out bool res) ? res : defaultValue;
-    }
-    
-    #region ENUMERATOR API
-
-    private enum ColorDifferenceMode
-    {
-        GlobalBrightNess,
-        ColorDifferenceChange
-    }
-
-    #endregion
-    
-    #region STRUCTURE API
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    public struct FontInfo
-    {
-        internal int cbSize;
-        internal int FontIndex;
-        internal short FontWidth;
-        public short FontSize;
-        public int FontFamily;
-        public int FontWeight;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-        public string FontName;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct CONSOLE_SCREEN_BUFFER_INFO
-    {
-        public COORD dwSize;
-        public COORD dwCursorPosition;
-        public short wAttributes;
-        public SMALL_RECT srWindow;
-        public COORD dwMaximumWindowSize;
-    }
-
-    [StructLayout(LayoutKind.Sequential)] public struct COORD { public short X; public short Y; }
-
-    [StructLayout(LayoutKind.Sequential)] public struct SMALL_RECT { public short Left; public short Top; public short Right; public short Bottom; }
-
-    [StructLayout(LayoutKind.Sequential)] public struct CONSOLE_SCREEN_BUFFER_INFOEX { public uint cbSize; public COORD dwSize; public COORD dwCursorPosition; public ushort wAttributes; public SMALL_RECT srWindow; public COORD dwMaximumWindowSize; public ushort wPopupAttributes; public bool bFullscreenSupported; [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)] public uint[] ColorTable; public uint ulInformationalMask; }
-
-    [StructLayout(LayoutKind.Sequential)] public struct CONSOLE_FONT_INFOEX { public uint cbSize; public uint nFont; public COORD dwFontSize; public int FontFamily; public int FontWeight; [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string FaceName; }
-    
-    #endregion
 }
