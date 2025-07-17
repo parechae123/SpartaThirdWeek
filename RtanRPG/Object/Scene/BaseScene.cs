@@ -1,22 +1,81 @@
+using RtanRPG.Object;
+using RtanRPG.Utils;
+using RtanRPG.Utils.Console;
+
 namespace RtanRPG.Object.Scene
 {
-    public class BaseScene : Iterable, IRenderable
+    public abstract class BaseScene : ICommandable, Iterable, IRenderable
     {
+        protected BaseScene(int index)
+        {
+            // var data = DataManager.Instance.SceneData[index];
+
+            // GameObjects = new List<>();
+            // Iterators = new Iterable[data.Indexes.Length];
+            
+            // Initialize command list.
+            Commands = new Dictionary<ConsoleKey, Action?>
+            {
+                { ConsoleKey.UpArrow, null },
+                { ConsoleKey.DownArrow, null },
+                { ConsoleKey.LeftArrow, null },
+                { ConsoleKey.RightArrow, null },
+                { ConsoleKey.Z, null },
+                { ConsoleKey.X, null }
+            };
+        }
+
+        public void Initialize()
+        {
+            // var count = GameObjects.Count;
+            // for (var i = 0; i < count; i++)
+            // {
+            //     GameObjects[i].Awake();
+            // }
+
+            // for (var i = 0; i < count; i++)
+            // {
+            //     GameObjects[i].Enable();
+            // }
+
+            // for (var i = 0; i < count; i++)
+            // {
+            //     GameObjects[i].Start();
+            // }
+        }
+
         public Iterable GetNextIterator(int index)
         {
             return Iterators[index];
         }
 
+        public void Execute(ConsoleKey key)
+        {
+            Commands[key]?.Invoke();
+        }
+
+        public virtual void Start()
+        {
+            IsReset = false;
+        }
+
         public virtual void Render()
         {
-            
+            Window.SetWindowBorder();
+            Window.Render();
         }
-
-        public virtual void Clear()
+        
+        public virtual void Reset()
         {
-            
+            IsReset = true;
         }
+        
+        // public List<MonoBehaviour> GameObjects { get; }
 
-        public Iterable[] Iterators { get; }
+        public Dictionary<ConsoleKey, Action?> Commands { get; }
+
+        public Iterable[] Iterators { get; set; }
+        
+        public bool IsReset { get; set; }
     }
 }

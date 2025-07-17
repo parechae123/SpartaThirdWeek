@@ -1,38 +1,37 @@
-using System.Diagnostics.Contracts;
-using System.Net;
-using Test.Utils.Extension;
+using System.Text;
+using RtanRPG.Utils.Extension;
 
-namespace Test.Utils.Console
+namespace RtanRPG.Utils.Console
 {
     public static class Window
     {
-        public const int DefaultWidth = 207;
-        public const int DefaultHeight = 50;
+        public const int DefaultLeftMargin = 2;
+        public const int DefaultTopMargin = 2;
 
-        public const int DefaultLeftMargin = 3;
-        public const int DefaultTopMargin = 3;
+        public static readonly Stream OutputStream = System.Console.OpenStandardOutput();
 
-        public const int MaximumContentWidth = DefaultWidth - 2;
-        public const int MaximumContentHeight = DefaultHeight - 2;
+        public static char[][] Buffer = [];
 
-        public static void DrawWindowBorder()
+        private static readonly StringBuilder Builder = new StringBuilder();
+        
+        public static void SetWindowBorder()
         {
-            for (var i = 0; i < DefaultHeight; i++)
+            for (var i = 0; i < DefaultHeight - 1; i++)
             {
-                Write(Border.Bold.VerticalLine, 0, i);
-                Write(Border.Bold.VerticalLine, DefaultWidth - 1, i);
+                Buffer[i][0] = Border.Bold.VerticalLine;
+                Buffer[i][DefaultWidth - 1] = Border.Bold.VerticalLine;
             }
 
             for (var i = 0; i < DefaultWidth; i++)
             {
-                Write(Border.Bold.HorizontalLine, i, 0);
-                Write(Border.Bold.HorizontalLine, i, DefaultHeight - 1);
+                Buffer[0][i] = Border.Bold.HorizontalLine;
+                Buffer[DefaultHeight - 1][i] = Border.Bold.HorizontalLine;
             }
 
-            Write(Border.Bold.LeftTopEdge, 0, 0);
-            Write(Border.Bold.RightTopEdge, DefaultWidth - 1, 0);
-            Write(Border.Bold.LeftBottomEdge, 0, DefaultHeight - 1);
-            Write(Border.Bold.RightBottomEdge, DefaultWidth - 1, DefaultHeight - 1);  
+            Buffer[0][0] = Border.Bold.LeftTopEdge;
+            Buffer[0][DefaultWidth - 1] = Border.Bold.RightTopEdge;
+            Buffer[DefaultHeight - 1][0] = Border.Bold.LeftBottomEdge;
+            Buffer[DefaultHeight - 1][DefaultWidth - 1] = Border.Bold.RightBottomEdge;
         }
 
         private static void Write(char value, int left, int top)
@@ -41,23 +40,64 @@ namespace Test.Utils.Console
             System.Console.Write(value);
         }
 
-        public static void Write(string value, int top)
+        public static void Write(string value, int left, int top, ConsoleColor color = ConsoleColor.White)
+        {
+            Write(value, left, top, MaximumContentWidth);
+        }
+        
+        public static void Write(string value, int left, int top, int length, ConsoleColor color = ConsoleColor.White)
         {
             var paragraphs = value.Split('\n');
             for (var i = 0; i < paragraphs.Length; i++, top++)
             {
-                var texts = paragraphs[i].WordWrap(MaximumContentWidth);
+                System.Console.ForegroundColor = color;
+                var texts = paragraphs[i].WordWrap(length);
                 for (var j = 0; j < texts.Count; j++)
                 {
-                    System.Console.SetCursorPosition(DefaultLeftMargin, top + j);
+                    System.Console.SetCursorPosition(left, top + j);
                     System.Console.Write(texts[j]);
                 }
+                System.Console.ResetColor();
             }
         }
+        
+        public static void WriteConsole(string str) => WriteConsole(Encoding.UTF8.GetBytes(str));
 
-        public struct Layout
+        public static void WriteConsole(ref string str) => WriteConsole(Encoding.UTF8.GetBytes(str));
+
+        public static void WriteConsole(byte[] buffer) => OutputStream.Write(buffer, 0, buffer.Length);
+
+        public static void WriteConsole(byte b) => OutputStream.WriteByte(b);
+
+        public static void Render()
         {
-
+            for (var i = 0; i < Buffer.Length - 1; i++)
+            {
+                for (var j = 0; j < Buffer[i].Length; j++)
+                {
+                    Builder.Append(Buffer[i][j]);
+                }
+                
+                Array.Fill(Buffer[i], ' ');
+                
+                Builder.Append(Environment.NewLine);
+            }
+            
+            var text = Builder.ToString();
+            WriteConsole(ref text);
+            
+            System.Console.SetCursorPosition(0, 0);
+            Builder.Clear();
+            
+            Thread.Sleep(1000);
         }
+        
+        public static int DefaultWidth { get; set; }
+
+        public static int DefaultHeight { get; set; }
+
+        public static int MaximumContentWidth => DefaultWidth - 2;
+
+        public static int MaximumContentHeight => DefaultHeight - 2;
     }
 }
