@@ -1,19 +1,17 @@
-﻿using System;
+﻿using RtanRPG.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RtanRPG.FSM.Monsters
+namespace RtanRPG.FSM.Charactors.Monsters
 {
     //YOON : 추후 GameObject 받으면 상속필요
-    class EnemyCharactor
+    class EnemyCharactor : Charactor
     {
-        protected Stat stat;
-        protected IStateMachine stateMachine;
-        public char[] keys;
 
-        public EnemyCharactor(Stat stat, char[] keys)
+        public EnemyCharactor(Stat stat, char[] keys) : base(stat,keys)
         {
             this.keys = keys;
             this.stat = stat;
@@ -21,15 +19,15 @@ namespace RtanRPG.FSM.Monsters
             
         }
         //YOON : MonoBehavior 상속 시 override와 구문추가 필요
-        public virtual void Awake(){}
-        public virtual void Enable(){}
-        public virtual void Start(){}
-        public virtual void Update() 
+        public override void Awake(){}
+        public override void Enable(){}
+        public override void Start(){}
+        public override void Update() 
         {
             stateMachine.GetCurrentState().Execute();
         }
-        public virtual void Disable() { }
-        public virtual void Destroy() { }
+        public override void Disable() { }
+        public override void Destroy() { }
         public void SendAttackOrder()
         {
             SetAttackState();
