@@ -4,52 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using RtanRPG.Data;
 
 namespace RtanRPG.Utils
 {
-    public class SceneData
-    {
-        public int[] Indexes { get; set; } = new int[0];
-        public string[] Menus { get; set; }
-        public string BackgroundMusic { get; set; }
-    }
-
-    public class StageSceneData : SceneData
-    {
-        public int[][] map { get; set; }
-        public SpawnData[] Positions { get; set; }
-    }
-
-    public class SpawnData : StageSceneData
-    {
-        public int index { get; set; }
-        public int Left { get; set; }
-        public int Right { get; set; }
-    }
-
-    public class CharacterData
-    {
-        public string Name { get; set; }
-        public int Level { get; set; }
-        public string Class { get; set; }
-        public int HealthPoint { get; set; }
-        public int AttackPoint { get; set; }
-        public int DefensePoint { get; set; }
-        public int Gold { get; set; }
-    }
-
-    public class BossEnemyData : CharacterData
-    {
-        public string[] Music { get; set; }
-        public string[] Notes { get; set; }
-    }
-
-    public class PlayerData : CharacterData
-    {
-        public int[] Inventories { get; set; }
-        public int[] Equipments { get; set; }
-    }
-
     public class DataManager
     {
         public PlayerData PlayerData { get; set; } 
@@ -58,12 +16,23 @@ namespace RtanRPG.Utils
         public StageSceneData[] StageSceneData { get; set; }                   //필요 객체들 생성
         private readonly string filePath;
         private static DataManager instance;
+        public static string Path = Environment.CurrentDirectory;
+
+        public static string GetDataFilePath(string filename)
+        {
+            return Path + @"\Asset\Data\" + filename + ".json";
+        }
+
+        public static string GetVideoFilePath(string filename)
+        {
+            return Path + @"\Asset\Video\" + filename + ".mp4";
+        }
 
         private DataManager()   //싱글톤화 시키면서 저장할 파일 생성
         {
-            string folderPath = Path.Combine(Environment.CurrentDirectory, "SaveData");
-            Directory.CreateDirectory(folderPath);
-            filePath = Path.Combine(folderPath, "AllData.json");
+            //string folderPath = Path.Combine(Environment.CurrentDirectory, "SaveData");
+            //Directory.CreateDirectory(folderPath);
+            //filePath = Path.Combine(folderPath, "AllData.json");
             instance.Load();
         }
 
