@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace RtanRPG.Utils.Console
 {
@@ -87,7 +86,8 @@ namespace RtanRPG.Utils.Console
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
 
         #endregion
-        public static IntPtr ConsoleHandle = IntPtr.Zero;
+        
+        public static readonly IntPtr ConsoleHandle = IntPtr.Zero;
 
         public static readonly IntPtr ConsoleOutputHandle = GetStdHandle(StandardOutputHandle);
 

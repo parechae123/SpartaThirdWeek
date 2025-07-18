@@ -3,7 +3,7 @@ namespace RtanRPG.Utils.Extension
     public static class StringExtensions
     {
         private static readonly char[] Whitespace = { ' ', '\n' };
-
+        
         public static List<string> WordWrap(this string text, int width)
         {
             var list = new List<string>();
@@ -15,7 +15,7 @@ namespace RtanRPG.Utils.Extension
             {
                 var sum = 0;
                 var count = 0;
-
+                
                 for (var i = previousIndex; i < length; i++)
                 {
                     sum += text[i].GetGraphicLength();
@@ -24,26 +24,27 @@ namespace RtanRPG.Utils.Extension
                     {
                         break;
                     }
-
+                    
                     count++;
                 }
-
+                
                 var index = text.LastIndexOfAny(Whitespace, Math.Min(length - 1, previousIndex + count)) + 1;
                 currentIndex = previousIndex + count > length ? length : index;
-
+                
                 if (currentIndex <= previousIndex)
                 {
                     currentIndex = Math.Min(previousIndex + count, length);
                 }
-
+                
                 list.Add(text.Substring(previousIndex, currentIndex - previousIndex).Trim(Whitespace));
-
+                
                 previousIndex = currentIndex;
-            } while (currentIndex < length);
+            }
+            while (currentIndex < length);
 
             return list;
         }
-
+        
         /// <param name="text">String to display.</param>
         /// <returns>Length of string graphically displayed on the console.</returns>
         public static int GetGraphicLength(this string text)
