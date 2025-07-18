@@ -1,5 +1,4 @@
 ﻿using RtanRPG.FSM;
-using RtanRPG.FSM.Monsters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +21,7 @@ namespace RtanRPG.Utils
                 data.HealthPoint,     // currHP (처음엔 동일하게 설정)
                 data.AttackPoint,
                 data.Name,
-                new MonsterStateMachine(stat)                 // 초기에는 상태머신 없음
+                true                // 초기에는 상태머신 없음
             );
 
             stat.stateMachine = null;
