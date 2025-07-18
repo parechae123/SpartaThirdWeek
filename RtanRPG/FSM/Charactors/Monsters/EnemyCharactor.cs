@@ -1,5 +1,6 @@
 ﻿using NAudio.SoundFont;
 using OpenCvSharp;
+using RtanRPG.Data;
 using RtanRPG.Utils;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace RtanRPG.FSM.Charactors.Monsters
         public override void Start(){}
         public override void Update() 
         {
-            stateMachine.GetCurrentState().Execute();
+            SMSequenceCheck();
         }
         public override void Disable() { }
         public override void Destroy() { }
@@ -53,14 +54,29 @@ namespace RtanRPG.FSM.Charactors.Monsters
             }
             console.AddLast(result);
         }
-
-
-/*       StateScene 수정예제
-        public override void Start()
+        public override void SMSequenceCheck()
         {
-            //씬내 몹 배치예시
-            GameObjects.Add(new Stat(0, 0, 0, "이름", false));
-        }*/
+            if (!isAttackSequence.Invoke()) stateMachine.StateChange(StateType.Attack);
+            else stateMachine.StateChange(StateType.Idle);
+        }
+        public void AttackPlayer(PlayerData data)
+        {
+            if (stat.IsDie) return;
+            data.TakeDamage(stat.AttackDamage);
+        }
+        public void HitMonster(int damage)
+        {
+            if (stat.IsDie) return;
+            stat.TakeDamage(damage);
+        }
+
+
+        /*       StateScene 수정예제
+                public override void Start()
+                {
+                    //씬내 몹 배치예시
+                    GameObjects.Add(new Stat(0, 0, 0, "이름", false));
+                }*/
 
         #region 미사용 함수 및 변수
 

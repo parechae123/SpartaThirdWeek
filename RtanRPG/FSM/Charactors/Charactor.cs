@@ -12,7 +12,7 @@ namespace RtanRPG.FSM.Charactors
         protected Stat stat;
         protected IStateMachine stateMachine;
         public delegate bool GetBattleState();
-        public GetBattleState IsAttackSequence;
+        public GetBattleState isAttackSequence;
         public Charactor(Stat stat)
         {
             this.stat = stat;
@@ -29,7 +29,7 @@ namespace RtanRPG.FSM.Charactors
         }
         public override void Update()
         {
-            
+            SMSequenceCheck();
         }
         public override void Start()
         {
@@ -45,7 +45,7 @@ namespace RtanRPG.FSM.Charactors
         }
         public virtual void SMSequenceCheck()
         {
-            if (IsAttackSequence.Invoke()) stateMachine.StateChange(StateType.Attack);
+            if (isAttackSequence.Invoke()) stateMachine.StateChange(StateType.Attack);
             else stateMachine.StateChange(StateType.Idle);
         }
     }

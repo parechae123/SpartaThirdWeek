@@ -31,7 +31,7 @@ namespace RtanRPG.FSM
             this.stateMachine = stateMachine;
         }
 
-        public bool IsChangeAble => throw new NotImplementedException();
+        public bool IsChangeAble => true;
 
         public virtual void Enter()
         {
@@ -45,7 +45,7 @@ namespace RtanRPG.FSM
 
         public virtual void Exit()
         {
-            throw new NotImplementedException();
+            
         }
     }
     public enum StateType { Attack,Idle,Die}

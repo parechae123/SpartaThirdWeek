@@ -1,7 +1,17 @@
 
 
+using RtanRPG.Data;
+using RtanRPG.FSM;
 using RtanRPG.FSM.Charactors;
 using RtanRPG.FSM.Charactors.Monsters;
+using RtanRPG.Utils;
+using RtanRPG.Utils.Console;
+using RtanRPG.Utils.Extension;
+using System;
+using System.ComponentModel;
+using System.Diagnostics.Contracts;
+using System.Drawing;
+using System.Linq;
 
 namespace RtanRPG.Object.Scene;
 
@@ -10,38 +20,66 @@ public class BattleScene : BaseScene
     int _index;
     public BattleScene(int index) : base(index)
     {
-        _index = index;
-
-        
+        _index = 0;
     }
     LinkedList<ConsoleKey> patterns = new LinkedList<ConsoleKey>();
-    public delegate void GetMonsterPatern(LinkedList<ConsoleKey> keys);//패턴 전송용
-    public GetMonsterPatern SetPattern;
+
+    public delegate void GetMonsterPatern(LinkedList<ConsoleKey> keys);
+    public GetMonsterPatern setPattern;//패턴을 수신하는 Delegate
+    public Action<PlayerData> playerHit;
+    public List<Action<int>> monsterHit = new List<Action<int>>();
+
     //플레이어 스텟 들고있기
-    ushort goalPatternFrameCount = 30; //패턴 입력기한 10 == 1초
+    ushort goalPatternFrameCount = 40; //패턴 입력기한 10 == 1초
     ushort currPatternFrame = 0;
     ushort currWaitTime = 0;//공격,Idle 딜레이 10 == 1초
-    ushort goalWaitTime = 20;//공격,Idle 딜레이 10 == 1초
+    ushort goalWaitTime = 30;//공격,Idle 딜레이 10 == 1초
+
+    private readonly string[] _menus = { "Attack ", "Potion ", "Run " };
+    private readonly string[] _selectedMenus = { "> Attack ", "> Potion ", "> Run " };
 
     public override void Start()
     {
         base.Start();
-        SetPattern = null;
+        setPattern = null;
+        monsterHit.Clear();
+        playerHit = null;
+        PatternReset();
+        RegistGameObjects();
         for (int i = 0; i < GameObjects.Count; i++)
         {
             
             if (GameObjects[i] is Charactor)
             {
                 Charactor charactor = (Charactor)GameObjects[i];
-                charactor.IsAttackSequence = IsAttackState;
+                charactor.isAttackSequence += IsAttackState;
                 if (charactor is EnemyCharactor)
                 {
                     EnemyCharactor enemy = (EnemyCharactor)GameObjects[i];
-                    SetPattern += enemy.SetNode;
+                    setPattern += enemy.SetNode;
+                    playerHit += enemy.AttackPlayer;
+                    monsterHit.Add(enemy.HitMonster);
                 }
             }
         }
+        SetAttackKey();
+        while (!IsUnloaded)
+        {
+            foreach (MonoBehaviour item in GameObjects) item.Update();
+            Update();
+            Render();
+        }
     }
+
+    private void RegistGameObjects()
+    {
+        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "name", false)));
+        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "nam", false)));
+        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "na", false)));
+    }
+
+
+
     public bool IsAttackState()
     {
         return currWaitTime < goalWaitTime;
@@ -52,67 +90,88 @@ public class BattleScene : BaseScene
     /// <returns></returns>
     public void Update()
     {
-        if(currWaitTime < goalWaitTime)
+        if(currWaitTime <= goalWaitTime)
         {
             currWaitTime++;
-            SetEvadeKey();
+            if(currWaitTime == goalWaitTime) 
+            {
+                setPattern?.Invoke(patterns);
+                SetEvadeKey();
+            }
             return;
         }
         currPatternFrame++;
-        if (goalPatternFrameCount <= currPatternFrame)
+        if (currPatternFrame >= goalPatternFrameCount || patterns.Count <= 0)
         {
             currPatternFrame = 0;
             currWaitTime = 0;
 
-            //if (patterns.Count > 0)//플레이어 데미지 처리
+            //if (patterns.Count > 0) playerHit.Invoke(DataManager.Instance.PlayerData);
 
             PatternReset();
             SetAttackKey();
-            SetPattern?.Invoke(patterns);
+            
         }
-    }
-/*    //혹시몰라서 테스크 버전도 준비해놨습니다
-    public async Task<bool> IsPatternFailTask()
-    {
-        await Task.Delay(goalPatternFrameCount * 100);
-        if (patterns.Count == 0)
-        {
-            PatternReset();
-            return false;
-        }
-        else
-        {
-            PatternReset();
-            return true;
-        }
-    }*/
-    
-    public void SetEvadeKey()
-    {
-        ResetArrowKey();
-        Commands[ConsoleKey.UpArrow] = UpArrow;
-        Commands[ConsoleKey.DownArrow] = DownArrow;
-        Commands[ConsoleKey.LeftArrow] = LeftArrow;
-        Commands[ConsoleKey.RightArrow] = RightArrow;
-    }
-    public void SetAttackKey()
-    {
-        //TODO : 기능 적용필요
-        ResetArrowKey();
-        /*Commands[ConsoleKey.UpArrow] = UpArrow;
-        Commands[ConsoleKey.DownArrow] = DownArrow;
-        Commands[ConsoleKey.LeftArrow] = LeftArrow;
-        Commands[ConsoleKey.RightArrow] = RightArrow;*/
-    }
-    private void ResetArrowKey()
-    {
-        Commands[ConsoleKey.UpArrow] = null;
-        Commands[ConsoleKey.DownArrow] = null;
-        Commands[ConsoleKey.LeftArrow] = null;
-        Commands[ConsoleKey.RightArrow] = null;
     }
 
-    #region 키재지정
+    #region 렌더링
+    public override void Render()
+    {
+        //OutputStream.WriteBuffer(_video.GetNextFrame(), _begin, _end);
+
+        RenderPlayerUI();
+        base.Render();
+    }
+    private void RenderPlayerUI()
+    {
+        int len = Layout.MaximumContentHeight - (_selectedMenus.Length * 3);
+
+        for (int i = 0; i < _selectedMenus.Length; i++)
+        {
+            if (_index == i)
+            {
+                OutputStream.WriteBuffer(
+                    _selectedMenus[i],
+                    new Vector2D(
+                        Layout.MaximumContentWidth / 2 - _selectedMenus[i].GetGraphicLength() / 2 - 1, len + (i * 2)
+                    )
+                );
+            }
+            else
+            {
+                OutputStream.WriteBuffer(
+                _menus[i],
+                new Vector2D(Layout.MaximumContentWidth / 2 - _menus[i].GetGraphicLength() / 2, len + (i * 2)));
+            }
+        }
+        if (!IsAttackState()) 
+        {
+            RenderingNotes();
+            Timer(goalPatternFrameCount, currPatternFrame, false);
+        }
+        else Timer(goalWaitTime, currWaitTime,true);
+
+    }
+    private void RenderingNotes()
+    {
+        string str = PatternsToString();
+        OutputStream.WriteBuffer(str, new Vector2D(Layout.MaximumContentWidth / 2 - str.GetGraphicLength() / 2, Layout.MaximumContentHeight / 2));
+    }
+    private void Timer(int goal,int curr,bool attackState)
+    {
+        float g = goal;
+        float c = curr;
+        float per = (c / g)*10;
+        int fullSquareMax = (int)MathF.Round(per);
+        string r = new string(Enumerable.Repeat<char>('□', 10).Select((c, idx) => idx < per? '■':c).ToArray());
+        string text = attackState ? " Select an action " : " Avoid enemy attacks! ";
+        OutputStream.WriteBuffer(text, new Vector2D(Layout.MaximumContentWidth / 2 - text.GetGraphicLength() / 2, (Layout.MaximumContentHeight / 3)+1));
+        OutputStream.WriteBuffer(r, new Vector2D(Layout.MaximumContentWidth / 2 - r.GetGraphicLength() / 2, Layout.MaximumContentHeight / 3));
+
+    }
+    #endregion
+
+    #region 패턴관련함수
     public void ReceiveMobPattern(ConsoleKey keys)
     {
         patterns.AddLast(keys);
@@ -126,38 +185,127 @@ public class BattleScene : BaseScene
         patterns.Clear();
     }
     #endregion
-    #region 키등록함수
-    public void UpArrow()
+
+    #region 키재지정
+    public void SetEvadeKey()
     {
-        if (patterns.Count <= 0) return;
-        if (patterns.First() == ConsoleKey.UpArrow)
-        {
-            patterns.RemoveFirst();
-        }
+        ResetArrowKey();
+        Commands[ConsoleKey.UpArrow] = UpArrow;
+        Commands[ConsoleKey.DownArrow] = DownArrow;
+        Commands[ConsoleKey.LeftArrow] = LeftArrow;
+        Commands[ConsoleKey.RightArrow] = RightArrow;
     }
-    public void DownArrow()
+    public void SetAttackKey()
     {
-        if (patterns.Count <= 0) return;
-        if (patterns.First() == ConsoleKey.DownArrow)
-        {
-            patterns.RemoveFirst();
-        }
+        //TODO : 기능 적용필요
+        ResetArrowKey();
+        Commands[ConsoleKey.UpArrow] = SelectUpperMenu;
+        Commands[ConsoleKey.DownArrow] = SelectLowerMenu;
+        Commands[ConsoleKey.Z] = SelectMenu;
     }
-    public void LeftArrow()
+    private void ResetArrowKey()
     {
-        if (patterns.Count <= 0) return;
-        if (patterns.First() == ConsoleKey.LeftArrow)
-        {
-            patterns.RemoveFirst();
-        }
+        Commands[ConsoleKey.UpArrow] = null;
+        Commands[ConsoleKey.DownArrow] = null;
+        Commands[ConsoleKey.LeftArrow] = null;
+        Commands[ConsoleKey.RightArrow] = null;
     }
-    public void RightArrow()
-    {
-        if (patterns.Count <= 0) return;
-        if (patterns.First() == ConsoleKey.RightArrow)
-        {
-            patterns.RemoveFirst();
-        }
-    }
+
     #endregion
+
+    #region 키기능함수
+    private void UpArrow()
+    {
+        TryNote(ConsoleKey.UpArrow);
+    }
+    private void DownArrow()
+    {
+        TryNote(ConsoleKey.DownArrow);
+    }
+    private void LeftArrow()
+    {
+        TryNote(ConsoleKey.LeftArrow);
+    }
+    private void RightArrow()
+    {
+        TryNote(ConsoleKey.RightArrow);
+    }
+    private void TryNote(ConsoleKey key)
+    {
+        if (patterns.Count <= 0) return;
+        if (patterns.First() == key) patterns.RemoveFirst();
+        else FailPattern();
+    }
+
+    public void FailPattern() { currPatternFrame = goalPatternFrameCount; }
+
+
+    private void SelectUpperMenu()
+    {
+        if (_index > 0)
+        {
+            _index--;
+        }
+    }
+
+    private void SelectLowerMenu()
+    {
+        if (_index < _menus.Length-1)
+        {
+            _index++;
+        }
+    }
+
+    private void SelectMenu()
+    {
+        switch (_index)
+        {
+            case 0:
+                SceneManager.Instance.Index = 2;
+                IsUnloaded = true;
+                break;
+            case 1:
+                Environment.Exit(0);
+                break;
+            case 2:
+                Environment.Exit(0);
+                break;
+        }
+    }
+
+    private void SelectUpperMonster()
+    {
+        if (_index > 0)
+        {
+            _index--;
+        }
+    }
+
+    private void SelectLowerMonster()
+    {
+        if (_index < _menus.Length-1)
+        {
+            _index++;
+        }
+    }
+
+    private void SelectMonster()
+    {
+        switch (_index)
+        {
+            case 0:
+                SceneManager.Instance.Index = 2;
+                IsUnloaded = true;
+                break;
+            case 1:
+                Environment.Exit(0);
+                break;
+            case 2:
+                Environment.Exit(0);
+                break;
+        }
+    }
+
+    #endregion
+
 }

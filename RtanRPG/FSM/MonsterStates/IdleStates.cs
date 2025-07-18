@@ -30,7 +30,7 @@ namespace RtanRPG.FSM.MonsterStates
 
         public override void Exit()
         {
-            throw new NotImplementedException();
+            
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,5 +16,7 @@ namespace RtanRPG.Data
         public int AttackPoint { get; set; }
         public int DefensePoint { get; set; }
         public int Gold { get; set; }
+
+
     }
 }
