@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
-namespace RtanRPG.FSM.MonsterStates
+namespace RtanRPG.FSM.PlayerStates
 {
-    class IdleState : StateParent
+    class AttackState : StateParent
     {
-        public IdleState(IStateMachine stateMachine) : base(stateMachine)
+        public AttackState(IStateMachine stateMachine) : base(stateMachine)
         {
             this.stateMachine = stateMachine;
         }
@@ -17,22 +16,19 @@ namespace RtanRPG.FSM.MonsterStates
         public override void Enter()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(stateMachine.GetName);
-            sb.Append("_Idle_");
+            sb.Append("Player_Attack_");
             sb.Append(stateMachine.GetPhase);
             /*sb.ToString();//키값으로 불러 올 string*/
         }
 
         public override void Execute()
         {
-
+            base.Execute();
         }
 
         public override void Exit()
         {
-            throw new NotImplementedException();
+            base.Exit();
         }
     }
-
-
 }

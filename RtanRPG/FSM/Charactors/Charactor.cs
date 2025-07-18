@@ -7,15 +7,14 @@ using System.Threading.Tasks;
 
 namespace RtanRPG.FSM.Charactors
 {
-    class Charactor : MonoBehavior
+    class Charactor : MonoBehaviour
     {
         protected Stat stat;
         protected IStateMachine stateMachine;
-        public char[] keys;
-
-        public Charactor(Stat stat, char[] keys)
+        public delegate bool GetBattleState();
+        public GetBattleState IsAttackSequence;
+        public Charactor(Stat stat)
         {
-            this.keys = keys;
             this.stat = stat;
             stateMachine = new MonsterStateMachine(stat);
 
@@ -43,6 +42,11 @@ namespace RtanRPG.FSM.Charactors
         public override void Disable()
         {
             
+        }
+        public virtual void SMSequenceCheck()
+        {
+            if (IsAttackSequence.Invoke()) stateMachine.StateChange(StateType.Attack);
+            else stateMachine.StateChange(StateType.Idle);
         }
     }
 }

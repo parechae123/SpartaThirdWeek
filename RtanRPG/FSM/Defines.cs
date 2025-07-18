@@ -60,13 +60,13 @@ namespace RtanRPG.FSM
         public int AttackDamage { get; private set; }
         public string Name { get; private set; }
 
-        public Stat(float maxHP, float currHP, int attackDamage, string name, IStateMachine stateMachine)
+        public Stat(float maxHP, float currHP, int attackDamage, string name,bool isPlayer)
         {
             this.maxHP = maxHP;
             this.currHP = currHP;
             AttackDamage = attackDamage;
             this.Name = name;
-            this.stateMachine = stateMachine;
+            this.stateMachine = isPlayer? new PlayerStateMachine(this) : new MonsterStateMachine(this); 
         }
 
         public void TakeDamage(float v)

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RtanRPG.FSM.States
+namespace RtanRPG.FSM.MonsterStates
 {
     class DieState : StateParent
     {
