@@ -1,5 +1,4 @@
 using System.Data;
-using RtanRPG.Utils.Console;
 
 namespace RtanRPG.Utils.Extension
 {
@@ -27,12 +26,12 @@ namespace RtanRPG.Utils.Extension
             var names = columns.Select(column => column.ColumnName);
             var rowLengths = GetRowLineLengths(rows, columns);
             var indentLengths = GetIndentLengths(rows, columns);
-            
+
             var list = new List<string>();
-            
+
             // Top border
-            list.Add($"{Screen.Border.LeftTopEdge}{string.Join(Screen.Border.TopCross, indentLengths.Select(l => new string('─', l + 2)))}{Screen.Border.RightTopEdge} ");
-            
+            list.Add($"{Console.Border.Normal.LeftTopEdge}{string.Join(Console.Border.Normal.TopCross, indentLengths.Select(l => new string('─', l + 2)))}{Console.Border.Normal.RightTopEdge} ");
+
             // Table name row
             list.Add($"│ {string.Join(" │ ", names.Select((name, index) => name.PadRight(indentLengths[index] - name.GetUnicodeLength())))} │ ");
 
@@ -45,10 +44,10 @@ namespace RtanRPG.Utils.Extension
                     list.Add($"│ {string.Join(" │ ", column)} │ ");
                 }
             }
-            
+
             // Bottom border
             list.Add($"└{string.Join('┴', indentLengths.Select(l => new string('─', l + 2)))}┘ ");
-            
+
             return list;
         }
 
@@ -66,22 +65,22 @@ namespace RtanRPG.Utils.Extension
                         length = Math.Max(length, texts.Count);
                     }
                 }
-                
+
                 lengths.Add(length);
             }
 
             return lengths;
         }
-        
+
         private static List<int> GetIndentLengths(DataRow[] rows, DataColumn[] columns)
         {
             var lengths = new List<int>();
-            
+
             for (var i = 0; i < columns.Length; i++)
             {
                 var length01 = columns[i].ColumnName.GetGraphicLength();
                 var length02 = -1;
-                
+
                 for (var j = 0; j < rows.Length; j++)
                 {
                     var length03 = length01;
@@ -95,13 +94,13 @@ namespace RtanRPG.Utils.Extension
                             length03 = text?.GetGraphicLength() ?? length01;
                             break;
                     }
-                    
+
                     length02 = Math.Max(length02, Math.Max(length01, length03));
                 }
-                
+
                 lengths.Add(rows.Length == 0 ? length01 : length02);
             }
-            
+
             return lengths;
         }
 
@@ -110,25 +109,25 @@ namespace RtanRPG.Utils.Extension
             var name = type.ToString().ToLower();
             switch (name)
             {
-                case var _ when name.StartsWith("system.byte"):    return Alignment.Right;
-                case var _ when name.StartsWith("system.sbyte"):   return Alignment.Right;
-                case var _ when name.StartsWith("system.short"):   return Alignment.Right;
-                case var _ when name.StartsWith("system.ushort"):  return Alignment.Right;
-                case var _ when name.StartsWith("system.int"):     return Alignment.Right;
-                case var _ when name.StartsWith("system.uint"):    return Alignment.Right;
-                case var _ when name.StartsWith("system.long"):    return Alignment.Right;
-                case var _ when name.StartsWith("system.ulong"):   return Alignment.Right;
-                case var _ when name.StartsWith("system.float"):   return Alignment.Right;
-                case var _ when name.StartsWith("system.double"):  return Alignment.Right;
+                case var _ when name.StartsWith("system.byte"): return Alignment.Right;
+                case var _ when name.StartsWith("system.sbyte"): return Alignment.Right;
+                case var _ when name.StartsWith("system.short"): return Alignment.Right;
+                case var _ when name.StartsWith("system.ushort"): return Alignment.Right;
+                case var _ when name.StartsWith("system.int"): return Alignment.Right;
+                case var _ when name.StartsWith("system.uint"): return Alignment.Right;
+                case var _ when name.StartsWith("system.long"): return Alignment.Right;
+                case var _ when name.StartsWith("system.ulong"): return Alignment.Right;
+                case var _ when name.StartsWith("system.float"): return Alignment.Right;
+                case var _ when name.StartsWith("system.double"): return Alignment.Right;
                 case var _ when name.StartsWith("system.decimal"): return Alignment.Right;
-                default:                                           return Alignment.Left;
+                default: return Alignment.Left;
             }
         }
 
         private static List<List<List<string>>> GetAlignedBody(DataRow[] rows, DataColumn[] columns, List<int> columnLengths, List<int> indentLengths)
         {
             var body = new List<List<List<string>>>();
-            
+
             for (var i = 0; i < rows.Length; i++)
             {
                 var column = new List<List<string>>();
@@ -136,7 +135,7 @@ namespace RtanRPG.Utils.Extension
                 {
                     column.Add(new List<string>());
                 }
-                
+
                 for (var j = 0; j < columns.Length; j++)
                 {
                     for (var k = 0; k < columnLengths[i]; k++)
@@ -188,7 +187,7 @@ namespace RtanRPG.Utils.Extension
                         }
                     }
                 }
-                
+
                 body.Add(column);
             }
 

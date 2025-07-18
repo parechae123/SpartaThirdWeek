@@ -1,5 +1,4 @@
 using RtanRPG.Object.Scene;
-using RtanRPG.Object.Scene;
 
 namespace RtanRPG.Utils
 {
@@ -11,24 +10,24 @@ namespace RtanRPG.Utils
 
         protected override void Initialize()
         {
-            // var length = DataManager.Instance.SceneData.Length;
+            var length = DataManager.Instance.SceneData.Length;
             
-            // // Create scene instance references.
-            // _scenes = new BaseScene[length];
-            // for (var i = 0; i < length; i++)
-            // {
-            //     _scenes[i] = SceneFactory.Create(i);
-            // }
+            // Create scene instance references.
+            _scenes = new BaseScene[length];
+            for (var i = 0; i < length; i++)
+            {
+                _scenes[i] = SceneFactory.Create(i);
+            }
 
-            // // Create a graph by connecting scenes.
-            // for (var i = 0; i < length; i++)
-            // {
-            //     var indexes = DataManager.Instance.SceneData[i].Indexes;
-            //     for (var j = 0; j < indexes.Length; j++)
-            //     {
-            //         _scenes[i].Iterators[j] = _scenes[indexes[j]];
-            //     }
-            // }
+            // Create a graph by connecting scenes.
+            for (var i = 0; i < length; i++)
+            {
+                var indexes = DataManager.Instance.SceneData[i].Indexes;
+                for (var j = 0; j < indexes.Length; j++)
+                {
+                    _scenes[i].Iterators[j] = _scenes[indexes[j]];
+                }
+            }
 
             _current = null;
         }
