@@ -1,4 +1,3 @@
-using RtanRPG.Object;
 using RtanRPG.Utils;
 using RtanRPG.Utils.Console;
 
@@ -8,10 +7,10 @@ namespace RtanRPG.Object.Scene
     {
         protected BaseScene(int index)
         {
-            // var data = DataManager.Instance.SceneData[index];
+            var data = DataManager.Instance.SceneData[index];
 
-            // GameObjects = new List<>();
-            // Iterators = new Iterable[data.Indexes.Length];
+            GameObjects = new List<MonoBehaviour>();
+            Iterators = new Iterable[data.Indexes.Length];
             
             // Initialize command list.
             Commands = new Dictionary<ConsoleKey, Action?>
@@ -27,21 +26,21 @@ namespace RtanRPG.Object.Scene
 
         public void Initialize()
         {
-            // var count = GameObjects.Count;
-            // for (var i = 0; i < count; i++)
-            // {
-            //     GameObjects[i].Awake();
-            // }
+            var count = GameObjects.Count;
+            for (var i = 0; i < count; i++)
+            {
+                GameObjects[i].Awake();
+            }
 
-            // for (var i = 0; i < count; i++)
-            // {
-            //     GameObjects[i].Enable();
-            // }
+            for (var i = 0; i < count; i++)
+            {
+                GameObjects[i].Enable();
+            }
 
-            // for (var i = 0; i < count; i++)
-            // {
-            //     GameObjects[i].Start();
-            // }
+            for (var i = 0; i < count; i++)
+            {
+                GameObjects[i].Start();
+            }
         }
 
         public Iterable GetNextIterator(int index)
@@ -51,7 +50,10 @@ namespace RtanRPG.Object.Scene
 
         public void Execute(ConsoleKey key)
         {
-            Commands[key]?.Invoke();
+            if (Commands.TryGetValue(key, out var action))
+            {
+                action?.Invoke();
+            }
         }
 
         public virtual void Start()
@@ -61,8 +63,9 @@ namespace RtanRPG.Object.Scene
 
         public virtual void Render()
         {
-            Window.SetWindowBorder();
-            Window.Render();
+            Layout.SetWindowBorder();
+            
+            OutputStream.Render();
         }
         
         public virtual void Reset()
@@ -70,7 +73,7 @@ namespace RtanRPG.Object.Scene
             IsReset = true;
         }
         
-        // public List<MonoBehaviour> GameObjects { get; }
+        public List<MonoBehaviour> GameObjects { get; }
 
         public Dictionary<ConsoleKey, Action?> Commands { get; }
 
