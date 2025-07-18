@@ -1,4 +1,6 @@
-﻿using RtanRPG.Utils;
+﻿using NAudio.SoundFont;
+using OpenCvSharp;
+using RtanRPG.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +13,8 @@ namespace RtanRPG.FSM.Charactors.Monsters
     class EnemyCharactor : Charactor
     {
 
-        public EnemyCharactor(Stat stat, char[] keys) : base(stat,keys)
+        public EnemyCharactor(Stat stat) : base(stat)
         {
-            this.keys = keys;
             this.stat = stat;
             stateMachine = new MonsterStateMachine(stat);
             
@@ -28,15 +29,38 @@ namespace RtanRPG.FSM.Charactors.Monsters
         }
         public override void Disable() { }
         public override void Destroy() { }
-        public void SendAttackOrder()
+        public void SetNode(LinkedList<ConsoleKey> console)
         {
-            SetAttackState();
-            
-            //keys[Random.Shared.Next(0, keys.Length)];//추후 BattleScene의 키값
-            //SetIdleState()끝나는 이벤트 전송이 가능하면 이걸 보낸다
+            int random = new Random().Next(0, 4);
+            ConsoleKey result;
+            switch (random)
+            {
+                case 0:
+                    result = ConsoleKey.LeftArrow;
+                    break;
+                case 1:
+                    result = ConsoleKey.RightArrow;
+                    break;
+                case 2:
+                    result = ConsoleKey.UpArrow;
+                    break;
+                case 3:
+                    result = ConsoleKey.DownArrow;
+                    break;
+                default:
+                    result = ConsoleKey.DownArrow;
+                    break;
+            }
+            console.AddLast(result);
         }
-        public void SetAttackState() { stateMachine.StateChange(StateType.Attack); }
-        public void SetIdleState() { stateMachine.StateChange(StateType.Idle); }
+
+
+/*       StateScene 수정예제
+        public override void Start()
+        {
+            //씬내 몹 배치예시
+            GameObjects.Add(new Stat(0, 0, 0, "이름", false));
+        }*/
 
         #region 미사용 함수 및 변수
 
@@ -97,9 +121,8 @@ namespace RtanRPG.FSM.Charactors.Monsters
     class BossEnemyCharactor : EnemyCharactor
     {
 
-        public BossEnemyCharactor(Stat stat,char[] keys) : base(stat,keys)
+        public BossEnemyCharactor(Stat stat) : base(stat)
         {
-            this.keys = keys;
             this.stat = stat;
             stateMachine = new MonsterStateMachine(stat);
 

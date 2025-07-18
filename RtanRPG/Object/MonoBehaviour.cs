@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RtanRPG.Object
 {
-    public abstract class MonoBehavior : IRenderable
+    public abstract class MonoBehaviour : IRenderable
     {
         protected char[][] Image;
         protected Transform Transform;
@@ -24,6 +24,11 @@ namespace RtanRPG.Object
         public abstract void Destroy();
 
         public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Reset()
         {
             throw new NotImplementedException();
         }
