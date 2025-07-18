@@ -58,7 +58,7 @@ namespace RtanRPG.Object.Scene
 
         public virtual void Start()
         {
-            IsReset = false;
+            IsUnloaded = false;
         }
 
         public virtual void Render()
@@ -67,10 +67,10 @@ namespace RtanRPG.Object.Scene
             
             OutputStream.Render();
         }
-        
+
         public virtual void Reset()
         {
-            IsReset = true;
+            
         }
         
         public List<MonoBehaviour> GameObjects { get; }
@@ -79,6 +79,6 @@ namespace RtanRPG.Object.Scene
 
         public Iterable[] Iterators { get; set; }
         
-        public bool IsReset { get; set; }
+        public bool IsUnloaded { get; set; }
     }
 }

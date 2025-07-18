@@ -31,7 +31,7 @@ namespace RtanRPG.Object.Scene
         {
             base.Start();
             
-            while (IsReset == false)
+            while (IsUnloaded == false)
             {
                 Render();
             }
@@ -68,7 +68,8 @@ namespace RtanRPG.Object.Scene
             switch (_index)
             {
                 case 0:
-                    SceneManager.Instance.Load(1);
+                    SceneManager.Instance.Index = 1;
+                    IsUnloaded = true;
                     break;
                 case 1:
                     Environment.Exit(0);

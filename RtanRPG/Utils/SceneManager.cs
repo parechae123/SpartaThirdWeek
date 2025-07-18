@@ -5,7 +5,6 @@ namespace RtanRPG.Utils
     public class SceneManager : Singleton<SceneManager>
     {
         private BaseScene[]? _scenes;
-
         private BaseScene? _current;
 
         protected override void Initialize()
@@ -45,5 +44,7 @@ namespace RtanRPG.Utils
         {
             _current?.Execute(key);
         }
+        
+        public int Index { get; set; }
     }
 }
