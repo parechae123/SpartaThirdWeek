@@ -33,7 +33,6 @@ namespace RtanRPG.Utils
             //string folderPath = Path.Combine(Environment.CurrentDirectory, "SaveData");
             //Directory.CreateDirectory(folderPath);
             //filePath = Path.Combine(folderPath, "AllData.json");
-            instance.Load();
         }
 
         public static DataManager Instance //싱글톤 실행 하나의 객체만 만듦
@@ -43,6 +42,7 @@ namespace RtanRPG.Utils
                 if (instance == null)
                 {
                     instance = new DataManager();
+                    instance.Load();
                 }
                 
                 return instance;
@@ -57,14 +57,14 @@ namespace RtanRPG.Utils
 
         public void Load()    //저장을 통해 json으로 번역돼 저장한 파일을 다시 원상복구시킴
         {
-            JsonSerializer<DataManager> serializer = new JsonSerializer<DataManager>();
-            DataManager loadFile = serializer.Load(filePath);
+            JsonSerializer<SceneData[]> serializer = new JsonSerializer<SceneData[]>();
+            var loadFile = serializer.Load(GetDataFilePath(nameof(SceneData)));
             if (loadFile != null)
             {
-                this.PlayerData = loadFile.PlayerData;
-                this.BossEnemyData = loadFile.BossEnemyData;
-                this.SceneData = loadFile.SceneData;
-                this.StageSceneData = loadFile.StageSceneData;
+                // this.PlayerData = loadFile.PlayerData;
+                // this.BossEnemyData = loadFile.BossEnemyData;
+                this.SceneData = loadFile;
+                // this.StageSceneData = loadFile.StageSceneData;
             }
         }
     }

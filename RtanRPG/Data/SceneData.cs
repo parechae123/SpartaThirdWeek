@@ -8,8 +8,7 @@ namespace RtanRPG.Data
 {
     public class SceneData
     {
-        public int[] Indexes { get; set; } = new int[0];
-        public string[] Menus { get; set; }
-        public string BackgroundMusic { get; set; }
+        public int[] Indexes { get; set; } = [];
+        public string[] Menus { get; set; } = [];
     }
 }

@@ -9,12 +9,8 @@ namespace RtanRPG.Object.Scene
             switch (index)
             {
                 case 0: return new MainScene(index);
-                case 1: return new StatusScene();
-                case 2: return new CutScene();
-                case 3: return new Stage01Scene();
-                case 4: return new Stage02Scene();
-                case 5: return new Stage03Scene();
-                case 6: return new BattleScene();
+                case 3: return new Stage01Scene(index);
+                case 6: return new BattleScene(index);
                 default: throw new System.Exception("Unknown scene index: " + index);
             }
         }

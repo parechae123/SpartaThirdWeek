@@ -13,6 +13,11 @@ public class Stage01Scene : BaseScene
 
     protected Random random = new Random();
 
+    public Stage01Scene(int index) : base(index)
+    {
+        
+    }
+
     private int GetOppositeDirection(int dir)                               //반대방향 구해주는 함수
     {
         return dir switch
