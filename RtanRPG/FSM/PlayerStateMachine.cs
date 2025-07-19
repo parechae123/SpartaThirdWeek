@@ -11,14 +11,12 @@ namespace RtanRPG.FSM
     {
         Dictionary<StateType, IState> states;
         IState currState;
-        Stat stat;
-        public Stat GetStatInfo { get { return stat; } }
+        public Stat GetStatInfo { get { return null; } }
 
         public int GetPhase => 0;
-        public string GetName => stat.Name;
-        public PlayerStateMachine(Stat stat)
+        public string GetName => "";
+        public PlayerStateMachine()
         {
-            this.stat = stat;
             states = new Dictionary<StateType, IState>(3);
             states.Add(StateType.Idle, new PlayerStates.IdleState(this));
 
@@ -35,11 +33,9 @@ namespace RtanRPG.FSM
 
         public void StateChange(StateType state)
         {
-            if (state != StateType.Die && stat.GetHPPercent <= 0) { StateChange(StateType.Die); return; }
+            
             if (states[state] == currState || currState == states[StateType.Die]) return;
             currState.Exit();
-
-            float currHP = stat.GetHPPercent;
 
 
             currState = states[state];

@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 
 namespace RtanRPG.Object.Scene;
 
@@ -45,15 +46,20 @@ public class BattleScene : BaseScene
 
     private readonly string[] _menus = { "Attack ", "Potion ", "Run " };
     private readonly string[] _selectedMenus = { "> Attack ", "> Potion ", "> Run " };
-
+//    private SpriteRenderer[] arrows;
     public override void Start()
     {
         base.Start();
 
+/*        arrows = new[] {new SpriteRenderer(DataManager.GetSpriteFilePath("ArrowUp"))
+            , new SpriteRenderer((DataManager.GetSpriteFilePath("ArrowDown")))
+            , new SpriteRenderer((DataManager.GetSpriteFilePath("ArrowLeft")))
+            , new SpriteRenderer((DataManager.GetSpriteFilePath("ArrowRight")))};
+        for (int i = 0; i < arrows.Length; i++) arrows[i].Prepare(20,20);*/
+
         _index = 0;
         _monsterIndex = 0;
         inTargetting = false;
-
         setPattern = null;
         monsterHit.Clear();
         playerHit = null;
@@ -85,9 +91,10 @@ public class BattleScene : BaseScene
 
     private void RegistGameObjects()
     {
-        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "banana", false)));
-        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "bana", false)));
-        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "ba", false)));
+        //TODO : 보스씬, 이미지 추가시 해당 함수 수정
+        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "DJ")));
+        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "DJ")));
+        GameObjects.Add(new PlayerDirrector(null));
     }
 
 
@@ -226,8 +233,84 @@ public class BattleScene : BaseScene
 
     private void NoteRender()
     {
-        string str = PatternsToString();
-        OutputStream.WriteBuffer(str, new Vector2D(Layout.MaximumContentWidth / 2 - str.GetGraphicLength() / 2, Layout.MaximumContentHeight / 2));
+        ConsoleKey[] keys = patterns.ToArray();
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < keys.Length; i++)
+        {
+            str.Append(' ');
+            switch (keys[i])
+            {
+                case ConsoleKey.UpArrow:
+                    str.Append('↑');
+                    break;
+                case ConsoleKey.DownArrow:
+                    str.Append('↓');
+                    break;
+                case ConsoleKey.LeftArrow:
+                    str.Append('←');
+                    break;
+                case ConsoleKey.RightArrow:
+                    str.Append('→');
+                    break;
+                default:
+                    return;
+            }
+            str.Append(' ');
+        }
+        string result = str.ToString();
+        OutputStream.WriteBuffer(result, new Vector2D(Layout.MaximumContentWidth / 2 - result.GetGraphicLength() / 2, Layout.MaximumContentHeight / 2));
+        /*if (patterns.Count <= 0) return;
+        ConsoleKey[] tempKeys = patterns.ToArray();
+        string[] result;
+
+        switch (tempKeys[0])
+        {
+            case ConsoleKey.UpArrow:
+                result = arrows[0].GetFrame();
+                break;
+            case ConsoleKey.DownArrow:
+                result = arrows[1].GetFrame();
+                break;
+            case ConsoleKey.LeftArrow:
+                result = arrows[2].GetFrame();
+                break;
+            case ConsoleKey.RightArrow:
+                result = arrows[3].GetFrame();
+                break;
+            default:
+                return;
+        }
+
+
+        for (int i = 1; i < tempKeys.Length; i++)
+        {
+            string[] tempResult;
+            switch (tempKeys[i])
+            {
+                case ConsoleKey.UpArrow:
+                    tempResult = arrows[0].GetFrame();
+                    break;
+                case ConsoleKey.DownArrow:
+                    tempResult = arrows[1].GetFrame();
+                    break;
+                case ConsoleKey.LeftArrow:
+                    tempResult = arrows[2].GetFrame();
+                    break;
+                case ConsoleKey.RightArrow:
+                    tempResult = arrows[3].GetFrame();
+                    break;
+                default:
+                    return;
+            }
+            for (int j = 0; j < result.Length; j++)
+            {
+                result[j] += tempResult[j];
+            }
+        }
+        if (result == null) return;
+        OutputStream.WriteBuffer(result, 
+            new Vector2D((Layout.MaximumContentWidth/2) - (result[0].Length/2),Layout.MaximumContentHeight- result.Length), 
+            new Vector2D((Layout.MaximumContentWidth / 2) + (result[0].Length / 2), Layout.MaximumContentHeight-1));*/
     }
     private void Timer(int goal,int curr,bool attackState)
     {
@@ -247,10 +330,6 @@ public class BattleScene : BaseScene
     public void ReceiveMobPattern(ConsoleKey keys)
     {
         patterns.AddLast(keys);
-    }
-    public string PatternsToString()//혹시 이미지 네임 반환해야될 것 같아서 넣어뒀습니다,
-    {
-        return $" {{{string.Join(',', patterns)}}}";
     }
     public void PatternReset()
     {
@@ -345,10 +424,10 @@ public class BattleScene : BaseScene
                 SetTargettingKey();
                 break;
             case 1:
-                Environment.Exit(0);
+                //아이템 사용로직
                 break;
             case 2:
-                Environment.Exit(0);
+                //뒤로가기
                 break;
         }
     }

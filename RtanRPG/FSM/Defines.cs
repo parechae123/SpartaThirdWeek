@@ -1,6 +1,8 @@
-﻿using System;
+﻿using RtanRPG.Object;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,7 +15,6 @@ namespace RtanRPG.FSM
         public IState GetCurrentState();
         string GetName { get; }
         int GetPhase { get; }
-
     }
     public interface IState
     {
@@ -60,13 +61,13 @@ namespace RtanRPG.FSM
         public int AttackDamage { get; private set; }
         public string Name { get; private set; }
 
-        public Stat(float maxHP, float currHP, int attackDamage, string name,bool isPlayer)
+        public Stat(float maxHP, float currHP, int attackDamage, string name)
         {
             this.maxHP = maxHP;
             this.currHP = currHP;
             AttackDamage = attackDamage;
             this.Name = name;
-            this.stateMachine = isPlayer? new PlayerStateMachine(this) : new MonsterStateMachine(this); 
+            this.stateMachine = new MonsterStateMachine(this); 
         }
 
         public void TakeDamage(float v)

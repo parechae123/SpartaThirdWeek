@@ -27,6 +27,7 @@ namespace RtanRPG.FSM.Charactors.Monsters
         public override void Update() 
         {
             SMSequenceCheck();
+            stateMachine.GetCurrentState().Execute();
         }
         public override void Disable() { }
         public override void Destroy() { }

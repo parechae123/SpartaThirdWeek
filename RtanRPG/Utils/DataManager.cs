@@ -28,9 +28,13 @@ namespace RtanRPG.Utils
         {
             return Path + @"\Asset\Video\" + filename + ".mp4";
         }
-
+        public static string GetSpriteFilePath(string filename)
+        {
+            return Path + @"\Asset\Sprite\" + filename + ".png";
+        }
         private DataManager()   //싱글톤화 시키면서 저장할 파일 생성
         {
+            PlayerData = new PlayerData();
             //string folderPath = Path.Combine(Environment.CurrentDirectory, "SaveData");
             //Directory.CreateDirectory(folderPath);
             //filePath = Path.Combine(folderPath, "AllData.json");
@@ -42,7 +46,6 @@ namespace RtanRPG.Utils
             {
                 if (instance == null)
                 {
-                    PlayerData playerData = new PlayerData();
                     instance = new DataManager();
                     instance.Load();
                 }

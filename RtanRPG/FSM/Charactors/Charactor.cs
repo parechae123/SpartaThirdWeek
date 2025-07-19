@@ -19,8 +19,7 @@ namespace RtanRPG.FSM.Charactors
         }
         public Charactor(Stat stat)
         {
-            this.stat = stat;
-            stateMachine = new MonsterStateMachine(stat);
+
 
         }
         public override void Awake()

@@ -20,8 +20,7 @@ namespace RtanRPG.Utils
                 data.HealthPoint,     // maxHP
                 data.HealthPoint,     // currHP (처음엔 동일하게 설정)
                 data.AttackPoint,
-                data.Name,
-                true                // 초기에는 상태머신 없음
+                data.Name
             );
 
             stat.stateMachine = null;
