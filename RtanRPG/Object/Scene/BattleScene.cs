@@ -1,5 +1,6 @@
 
 
+using OpenCvSharp;
 using RtanRPG.Data;
 using RtanRPG.FSM;
 using RtanRPG.FSM.Charactors;
@@ -18,17 +19,24 @@ namespace RtanRPG.Object.Scene;
 public class BattleScene : BaseScene
 {
     int _index;
+    int _monsterIndex;
     public BattleScene(int index) : base(index)
     {
         _index = 0;
+        _monsterIndex = 0;
     }
+    bool inTargetting; //Enum
+
     LinkedList<ConsoleKey> patterns = new LinkedList<ConsoleKey>();
 
     public delegate void GetMonsterPatern(LinkedList<ConsoleKey> keys);
     public GetMonsterPatern setPattern;//패턴을 수신하는 Delegate
     public Action<PlayerData> playerHit;
-    public List<Action<int>> monsterHit = new List<Action<int>>();
 
+    public delegate bool IsDie();
+    public IsDie die;
+
+    public List<(Action<int>,IsDie,string)> monsterHit = new List<(Action<int>,IsDie, string)>();
     //플레이어 스텟 들고있기
     ushort goalPatternFrameCount = 40; //패턴 입력기한 10 == 1초
     ushort currPatternFrame = 0;
@@ -41,6 +49,11 @@ public class BattleScene : BaseScene
     public override void Start()
     {
         base.Start();
+
+        _index = 0;
+        _monsterIndex = 0;
+        inTargetting = false;
+
         setPattern = null;
         monsterHit.Clear();
         playerHit = null;
@@ -48,7 +61,6 @@ public class BattleScene : BaseScene
         RegistGameObjects();
         for (int i = 0; i < GameObjects.Count; i++)
         {
-            
             if (GameObjects[i] is Charactor)
             {
                 Charactor charactor = (Charactor)GameObjects[i];
@@ -58,7 +70,7 @@ public class BattleScene : BaseScene
                     EnemyCharactor enemy = (EnemyCharactor)GameObjects[i];
                     setPattern += enemy.SetNode;
                     playerHit += enemy.AttackPlayer;
-                    monsterHit.Add(enemy.HitMonster);
+                    monsterHit.Add((enemy.HitMonster,enemy.IsDie,enemy.GetName()));
                 }
             }
         }
@@ -73,9 +85,9 @@ public class BattleScene : BaseScene
 
     private void RegistGameObjects()
     {
-        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "name", false)));
-        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "nam", false)));
-        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "na", false)));
+        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "banana", false)));
+        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "bana", false)));
+        GameObjects.Add(new EnemyCharactor(new FSM.Stat(10, 10, 10, "ba", false)));
     }
 
 
@@ -90,14 +102,16 @@ public class BattleScene : BaseScene
     /// <returns></returns>
     public void Update()
     {
+        if (inTargetting) return;
         if(currWaitTime <= goalWaitTime)
         {
-            currWaitTime++;
             if(currWaitTime == goalWaitTime) 
             {
                 setPattern?.Invoke(patterns);
                 SetEvadeKey();
             }
+            currWaitTime++;
+
             return;
         }
         currPatternFrame++;
@@ -106,7 +120,7 @@ public class BattleScene : BaseScene
             currPatternFrame = 0;
             currWaitTime = 0;
 
-            //if (patterns.Count > 0) playerHit.Invoke(DataManager.Instance.PlayerData);
+            if (patterns.Count > 0) playerHit.Invoke(DataManager.Instance.PlayerData);
 
             PatternReset();
             SetAttackKey();
@@ -118,14 +132,35 @@ public class BattleScene : BaseScene
     public override void Render()
     {
         //OutputStream.WriteBuffer(_video.GetNextFrame(), _begin, _end);
-
+        
         RenderPlayerUI();
         base.Render();
     }
     private void RenderPlayerUI()
     {
-        int len = Layout.MaximumContentHeight - (_selectedMenus.Length * 3);
 
+        if (inTargetting)
+        {
+            TargetingRender();
+            return;
+        }
+
+        if (!IsAttackState())
+        {
+            NoteRender();
+            Timer(goalPatternFrameCount, currPatternFrame, false);
+        }
+        else 
+        {
+            MenuRender();
+            Timer(goalWaitTime, currWaitTime, true);
+        }
+
+    }
+
+    private void MenuRender()
+    {
+        int len = Layout.MaximumContentHeight - (_selectedMenus.Length * 3);
         for (int i = 0; i < _selectedMenus.Length; i++)
         {
             if (_index == i)
@@ -144,15 +179,52 @@ public class BattleScene : BaseScene
                 new Vector2D(Layout.MaximumContentWidth / 2 - _menus[i].GetGraphicLength() / 2, len + (i * 2)));
             }
         }
-        if (!IsAttackState()) 
+    }
+    private void TargetingRender()
+    {
+        int len = Layout.MaximumContentHeight - (monsterHit.Count * 2)-2;
+        for (int i = 0; i < monsterHit.Count; i++)
         {
-            RenderingNotes();
-            Timer(goalPatternFrameCount, currPatternFrame, false);
+            if (_monsterIndex == i)
+            {
+                string str = $" > {monsterHit[i].Item3} ";
+                OutputStream.WriteBuffer(
+                    str,
+                    new Vector2D(
+                        Layout.MaximumContentWidth / 2 - str.GetGraphicLength() / 2 - 1, len + (i * 2)
+                    )
+                );
+            }
+            else
+            {
+                string str = $" {monsterHit[i].Item3} ";
+                OutputStream.WriteBuffer(
+                str,
+                new Vector2D(Layout.MaximumContentWidth / 2 - str.GetGraphicLength() / 2, len + (i * 2)));
+            }
         }
-        else Timer(goalWaitTime, currWaitTime,true);
+        
+
+        if (_monsterIndex == monsterHit.Count)
+        {
+            string exit = " > Return ";
+            OutputStream.WriteBuffer(
+            exit,
+            new Vector2D(
+                Layout.MaximumContentWidth / 2 - exit.GetGraphicLength() / 2 - 1, Layout.MaximumContentHeight-2
+            ));
+        }
+        else
+        {
+            string exit = " Return ";
+            OutputStream.WriteBuffer(
+            exit,
+            new Vector2D(Layout.MaximumContentWidth / 2 - exit.GetGraphicLength() / 2, Layout.MaximumContentHeight-2));
+        }
 
     }
-    private void RenderingNotes()
+
+    private void NoteRender()
     {
         string str = PatternsToString();
         OutputStream.WriteBuffer(str, new Vector2D(Layout.MaximumContentWidth / 2 - str.GetGraphicLength() / 2, Layout.MaximumContentHeight / 2));
@@ -197,11 +269,17 @@ public class BattleScene : BaseScene
     }
     public void SetAttackKey()
     {
-        //TODO : 기능 적용필요
         ResetArrowKey();
         Commands[ConsoleKey.UpArrow] = SelectUpperMenu;
         Commands[ConsoleKey.DownArrow] = SelectLowerMenu;
         Commands[ConsoleKey.Z] = SelectMenu;
+    }
+    public void SetTargettingKey()
+    {
+        ResetArrowKey();
+        Commands[ConsoleKey.UpArrow] = SelectUpperMonster;
+        Commands[ConsoleKey.DownArrow] = SelectLowerMonster;
+        Commands[ConsoleKey.Z] = SelectMonster;
     }
     private void ResetArrowKey()
     {
@@ -209,6 +287,7 @@ public class BattleScene : BaseScene
         Commands[ConsoleKey.DownArrow] = null;
         Commands[ConsoleKey.LeftArrow] = null;
         Commands[ConsoleKey.RightArrow] = null;
+        Commands[ConsoleKey.Z] = null;
     }
 
     #endregion
@@ -261,8 +340,9 @@ public class BattleScene : BaseScene
         switch (_index)
         {
             case 0:
-                SceneManager.Instance.Index = 2;
-                IsUnloaded = true;
+                _monsterIndex = 0;
+                inTargetting = true;
+                SetTargettingKey();
                 break;
             case 1:
                 Environment.Exit(0);
@@ -275,35 +355,35 @@ public class BattleScene : BaseScene
 
     private void SelectUpperMonster()
     {
-        if (_index > 0)
+        if (_monsterIndex > 0)
         {
-            _index--;
+            _monsterIndex--;
         }
     }
 
     private void SelectLowerMonster()
     {
-        if (_index < _menus.Length-1)
+        if (_monsterIndex < monsterHit.Count)
         {
-            _index++;
+            _monsterIndex++;
         }
     }
 
     private void SelectMonster()
     {
-        switch (_index)
+
+        if (_monsterIndex < monsterHit.Count)
         {
-            case 0:
-                SceneManager.Instance.Index = 2;
-                IsUnloaded = true;
-                break;
-            case 1:
-                Environment.Exit(0);
-                break;
-            case 2:
-                Environment.Exit(0);
-                break;
+            monsterHit[_monsterIndex].Item1(DataManager.Instance.PlayerData.AttackPoint);
+            if (monsterHit[_monsterIndex].Item2.Invoke()) monsterHit.RemoveAt(_monsterIndex);
+            currWaitTime = goalWaitTime;
         }
+        else
+        {
+            SetAttackKey();
+        }
+        inTargetting = false;
+
     }
 
     #endregion

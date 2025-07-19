@@ -13,6 +13,10 @@ namespace RtanRPG.FSM.Charactors
         protected IStateMachine stateMachine;
         public delegate bool GetBattleState();
         public GetBattleState isAttackSequence;
+        public bool IsDie()
+        {
+            return stat.IsDie;
+        }
         public Charactor(Stat stat)
         {
             this.stat = stat;

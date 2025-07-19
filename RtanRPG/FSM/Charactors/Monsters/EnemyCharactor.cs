@@ -13,7 +13,7 @@ namespace RtanRPG.FSM.Charactors.Monsters
     //YOON : 추후 GameObject 받으면 상속필요
     class EnemyCharactor : Charactor
     {
-
+        public string GetName() => stat.Name;
         public EnemyCharactor(Stat stat) : base(stat)
         {
             this.stat = stat;
