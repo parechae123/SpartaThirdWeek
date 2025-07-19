@@ -42,6 +42,7 @@ namespace RtanRPG.Utils
             {
                 if (instance == null)
                 {
+                    PlayerData playerData = new PlayerData();
                     instance = new DataManager();
                     instance.Load();
                 }

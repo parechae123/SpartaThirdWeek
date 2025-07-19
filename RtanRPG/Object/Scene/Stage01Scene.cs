@@ -10,6 +10,7 @@ public class Stage01Scene : BaseScene
     
     private int Index;
     int count = 10;
+    private bool isBossRoom = false;  // 현재 맵이 보스방인지 여부
     private string[] map;   //맵 데이터 저장할 변수
     private int mapX = 0;   // 현재 맵의 가로 위치 
     private int mapY = 0;   // 현재 맵의 세로 위치
@@ -73,6 +74,8 @@ public class Stage01Scene : BaseScene
         if (index < 0 || index >= DataManager.Instance.MapData.Count())
             return;
 
+        isBossRoom = (index == 0); // 보스방 여부 설정//////////////////////////////////////
+
         mapX = x;
         mapY = y;
         map = DataManager.Instance.MapData[index].Image;
@@ -95,7 +98,7 @@ public class Stage01Scene : BaseScene
             Math.Clamp(enemyPosition.Left, 0, map[0].Length - 1),
             Math.Clamp(enemyPosition.Top, 0, map.Length - 1));
 
-        enemyPosition = GetRandomWalkablePosition(); // 적 위치랜덤생성
+        enemyPosition = isBossRoom ? new Vector2D(114,6) : GetRandomWalkablePosition(); //적 위치 랜덤생성 및 보스위치 고정
 
     }
 
@@ -201,6 +204,8 @@ public class Stage01Scene : BaseScene
 
     protected void UpdateEnemy()                                            //적 랜덤 이동 함수
     {
+        if (isBossRoom) return; // 보스맵일 경우 적 이동 금지
+
         enemyUpdateCount++;
 
         if (enemyUpdateCount >= count)
@@ -243,7 +248,10 @@ public class Stage01Scene : BaseScene
 
     private void ChangeToBattleScene()                                      //이벤트 발생했을때 실행할 함수 (배틀씬 전환)
     {
-        SceneManager.Instance.Index = 2;
+        if (isBossRoom)
+            SceneManager.Instance.Index = 0; // TODO: 나중에 보스씬 넣어줘야함
+        else
+            SceneManager.Instance.Index = 2;
         IsUnloaded = true; // 현재 씬 종료
     }
     
@@ -278,13 +286,13 @@ public class Stage01Scene : BaseScene
             for (int x = 0; x < map[y].Length; x++)
             {
                 OutputStream.WriteBuffer(
-                    map[y][x].ToString(),
+                    map[y][x] == '.' ? " " : map[y][x].ToString(),
                     new Vector2D(x + Layout.DefaultLeftMargin, y + Layout.DefaultTopMargin - 2),
                     1
                 );
             }
         }
         OutputStream.WriteBuffer("P", playerPosition + new Vector2D(Layout.DefaultLeftMargin, Layout.DefaultTopMargin - 2), 100);
-        OutputStream.WriteBuffer("E", enemyPosition + new Vector2D(Layout.DefaultLeftMargin, Layout.DefaultTopMargin - 2), 100);
+        OutputStream.WriteBuffer(isBossRoom ? "B" : "E",enemyPosition + new Vector2D(Layout.DefaultLeftMargin, Layout.DefaultTopMargin - 2),100); /////
     }
 }
