@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RtanRPG.Data
 {
-    public class CharacterData
+    public class CharacterData  //보스나 몬스터도 적용되는 클래스
     {
         public string Name { get; set; }
         public int Level { get; set; }
