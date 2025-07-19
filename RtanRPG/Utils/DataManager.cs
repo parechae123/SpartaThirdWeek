@@ -10,9 +10,10 @@ namespace RtanRPG.Utils
 {
     public class DataManager
     {
-        public PlayerData PlayerData { get; set; } 
-        public BossEnemyData[] BossEnemyData { get; set; }  
-        public SceneData[] SceneData { get; set; } 
+        public MapData[] MapData { get; set; }
+        public PlayerData PlayerData { get; set; }
+        public BossEnemyData[] BossEnemyData { get; set; }
+        public SceneData[] SceneData { get; set; }
         public StageSceneData[] StageSceneData { get; set; }                   //필요 객체들 생성
         private readonly string filePath;
         private static DataManager instance;
@@ -44,7 +45,7 @@ namespace RtanRPG.Utils
                     instance = new DataManager();
                     instance.Load();
                 }
-                
+
                 return instance;
             }
         }
@@ -66,6 +67,8 @@ namespace RtanRPG.Utils
                 this.SceneData = loadFile;
                 // this.StageSceneData = loadFile.StageSceneData;
             }
+            JsonSerializer<MapData[]> serializer1 = new JsonSerializer<MapData[]>();
+            MapData = serializer1.Load(GetDataFilePath(nameof(MapData)));
         }
     }
 
