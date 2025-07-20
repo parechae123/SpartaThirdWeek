@@ -19,6 +19,9 @@ namespace RtanRPG.Object.Scene;
 
 public class BattleScene : BaseScene
 {
+    private bool isSceneChanging = false;  // 씬 전환 중복 방지용
+    private bool _shouldGoToMain = false;
+
     int _index;
     int _monsterIndex;
     public BattleScene(int index) : base(index)
@@ -51,11 +54,13 @@ public class BattleScene : BaseScene
     {
         base.Start();
 
-/*        arrows = new[] {new SpriteRenderer(DataManager.GetSpriteFilePath("ArrowUp"))
-            , new SpriteRenderer((DataManager.GetSpriteFilePath("ArrowDown")))
-            , new SpriteRenderer((DataManager.GetSpriteFilePath("ArrowLeft")))
-            , new SpriteRenderer((DataManager.GetSpriteFilePath("ArrowRight")))};
-        for (int i = 0; i < arrows.Length; i++) arrows[i].Prepare(20,20);*/
+        isSceneChanging = false;
+        _shouldGoToMain = false;
+        /*        arrows = new[] {new SpriteRenderer(DataManager.GetSpriteFilePath("ArrowUp"))
+                    , new SpriteRenderer((DataManager.GetSpriteFilePath("ArrowDown")))
+                    , new SpriteRenderer((DataManager.GetSpriteFilePath("ArrowLeft")))
+                    , new SpriteRenderer((DataManager.GetSpriteFilePath("ArrowRight")))};
+                for (int i = 0; i < arrows.Length; i++) arrows[i].Prepare(20,20);*/
 
         _index = 0;
         _monsterIndex = 0;
@@ -86,6 +91,11 @@ public class BattleScene : BaseScene
             foreach (MonoBehaviour item in GameObjects) item.Update();
             Update();
             Render();
+    }
+        if (_shouldGoToMain)////////////////////////////////
+        {
+            _shouldGoToMain = false;
+            SceneManager.Instance.Load(1);
         }
     }
 
@@ -427,7 +437,13 @@ public class BattleScene : BaseScene
                 //아이템 사용로직
                 break;
             case 2:
-                //뒤로가기
+                if (!isSceneChanging)
+                {
+                    isSceneChanging = true;
+                    IsUnloaded = true;
+                    _shouldGoToMain = true;
+
+                }
                 break;
         }
     }

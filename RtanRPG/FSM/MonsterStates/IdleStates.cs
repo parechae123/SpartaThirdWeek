@@ -11,7 +11,7 @@ namespace RtanRPG.FSM.MonsterStates
 {
     class IdleState : StateParent
     {
-        //Vector값을 attleScene에서 간격 조정해서 생성자로 인수 넘겨주고 
+        //Vector값을 battleScene에서 간격 조정해서 생성자로 인수 넘겨주고 
         SpriteRenderer sr;
         public IdleState(IStateMachine stateMachine) : base(stateMachine)
         {
