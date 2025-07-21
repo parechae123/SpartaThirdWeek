@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Player",
+  "Level": 1,
+  "Class": "Musician",
+  "HealthPoint": 200,
+  "AttackPoint": 20,
+  "DefensePoint": 20,
+  "Inventory": [],
+  "Equipments": []
+}
