@@ -52,7 +52,7 @@ public class BattleScene : BaseScene
                     , new SpriteRenderer((DataManager.GetSpriteFilePath("ArrowLeft")))
                     , new SpriteRenderer((DataManager.GetSpriteFilePath("ArrowRight")))};
                 for (int i = 0; i < arrows.Length; i++) arrows[i].Prepare(20,20);*/
-
+        GameObjects.Clear();
         _index = 0;
         _monsterIndex = 0;
         inTargetting = false;
@@ -425,7 +425,7 @@ public class BattleScene : BaseScene
                 {
                     isSceneChanging = true;
                     IsUnloaded = true;
-                    SceneManager.Instance.Index = 4;
+                    SceneManager.Instance.Index = 3;
 
                 }
                 break;
